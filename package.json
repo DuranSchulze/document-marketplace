@@ -20,6 +20,7 @@
   "dependencies": {
     "@faker-js/faker": "^10.3.0",
     "@fontsource-variable/figtree": "^5.2.10",
+    "@fontsource-variable/manrope": "^5.2.8",
     "@hugeicons/core-free-icons": "^4.1.1",
     "@hugeicons/react": "^1.1.6",
     "@modelcontextprotocol/sdk": "^1.27.1",
