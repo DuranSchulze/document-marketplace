@@ -4,6 +4,29 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     SERVER_URL: z.string().url().optional(),
+    DATABASE_URL: z.string().min(1).optional(),
+    BETTER_AUTH_SECRET: z.string().min(1).optional(),
+    BETTER_AUTH_URL: z.string().url().optional(),
+    // Xendit
+    XENDIT_SECRET_KEY: z.string().min(1).optional(),
+    XENDIT_WEBHOOK_TOKEN: z.string().min(1).optional(),
+    // Google Drive
+    GOOGLE_DRIVE_ROOT_FOLDER_ID: z.string().min(1).optional(),
+    // Google Sheets + Drive (shared service account)
+    GOOGLE_SHEETS_ID: z.string().min(1).optional(),
+    GOOGLE_SERVICE_ACCOUNT_EMAIL: z.string().email().optional(),
+    GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: z.string().min(1).optional(),
+    // Download tokens
+    DOWNLOAD_TOKEN_SECRET: z.string().min(32).optional(),
+    // Email (SMTP)
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.coerce.number().optional(),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASS: z.string().optional(),
+    SMTP_FROM: z.string().optional(),
+    // Admin seed
+    ADMIN_EMAIL: z.string().email().optional(),
+    ADMIN_PASSWORD: z.string().optional(),
   },
 
   /**

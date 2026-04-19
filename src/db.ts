@@ -1,16 +1,16 @@
 import { PrismaClient } from './generated/prisma/client.js'
 
-import { PrismaPg } from '@prisma/adapter-pg'
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-})
-
 declare global {
   var __prisma: PrismaClient | undefined
 }
 
-export const prisma = globalThis.__prisma || new PrismaClient({ adapter })
+function createPrismaClient() {
+  const url = process.env.DATABASE_URL
+  if (!url) throw new Error('DATABASE_URL is not set')
+  return new PrismaClient({ accelerateUrl: url } as any)
+}
+
+export const prisma = globalThis.__prisma || createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.__prisma = prisma

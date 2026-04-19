@@ -1,303 +1,296 @@
-Welcome to your new TanStack Start app! 
+# DocMarket — Document Marketplace
 
-# Getting Started
+A digital document marketplace built with TanStack Start. Customers browse and purchase documents, admins manage listings and view sales.
 
-To run this application:
-
-```bash
-npm install
-npm run dev
-```
-
-# Building For Production
-
-To build this application for production:
-
-```bash
-npm run build
-```
-
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
-npm run test
-```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
-
-
-# TanStack Chat Application
-
-Am example chat application built with TanStack Start, TanStack Store, and Claude AI.
-
-## .env Updates
-
-```env
-ANTHROPIC_API_KEY=your_anthropic_api_key
-```
-
-## ✨ Features
-
-### AI Capabilities
-- 🤖 Powered by Claude 3.5 Sonnet 
-- 📝 Rich markdown formatting with syntax highlighting
-- 🎯 Customizable system prompts for tailored AI behavior
-- 🔄 Real-time message updates and streaming responses (coming soon)
-
-### User Experience
-- 🎨 Modern UI with Tailwind CSS and Lucide icons
-- 🔍 Conversation management and history
-- 🔐 Secure API key management
-- 📋 Markdown rendering with code highlighting
-
-### Technical Features
-- 📦 Centralized state management with TanStack Store
-- 🔌 Extensible architecture for multiple AI providers
-- 🛠️ TypeScript for type safety
+---
 
 ## Architecture
 
-### Tech Stack
-- **Frontend Framework**: TanStack Start
-- **Routing**: TanStack Router
-- **State Management**: TanStack Store
-- **Styling**: Tailwind CSS
-- **AI Integration**: Anthropic's Claude API
-
-## Setting up Better Auth
-
-1. Generate and set the `BETTER_AUTH_SECRET` environment variable in your `.env.local`:
-
-   ```bash
-   npx -y @better-auth/cli secret
-   ```
-
-2. Visit the [Better Auth documentation](https://www.better-auth.com) to unlock the full potential of authentication in your app.
-
-### Adding a Database (Optional)
-
-Better Auth can work in stateless mode, but to persist user data, add a database:
-
-```typescript
-// src/lib/auth.ts
-import { betterAuth } from "better-auth";
-import { Pool } from "pg";
-
-export const auth = betterAuth({
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-  }),
-  // ... rest of config
-});
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     STORAGE LAYERS                          │
+├──────────────────┬──────────────────┬───────────────────────┤
+│  Google Drive    │  Google Sheets   │  PostgreSQL (Prisma)  │
+│  ─────────────   │  ─────────────── │  ────────────────────  │
+│  Actual files    │  Customer log    │  Document catalog     │
+│  Organized by    │  (name, email,   │  Orders & payments    │
+│  category folder │  phone, address) │  Auth sessions        │
+│  Admin drag &    │  Auto-appended   │  Sales reporting      │
+│  drop uploads    │  on each sale    │                       │
+└──────────────────┴──────────────────┴───────────────────────┘
 ```
 
-Then run migrations:
+### Why each layer?
 
-```bash
-npx -y @better-auth/cli migrate
+| Layer | Responsibility | Why |
+|-------|---------------|-----|
+| **Google Drive** | File storage | Native folder organization, direct download links, easy manual management |
+| **Google Sheets** | Customer records | Non-technical team can open a spreadsheet and see who bought what |
+| **PostgreSQL/Prisma** | Document catalog + Orders | Structured queries, sales reports, relational data, admin filtering |
+
+---
+
+## Google Drive Folder Structure
+
+Files are organized automatically under a root folder specified by `GOOGLE_DRIVE_ROOT_FOLDER_ID`:
+
+```
+DocMarket/                          ← root folder (share with service account as Editor)
+  Legal/
+    nda-template-2024.pdf
+    employment-contract.pdf
+  Business/
+    business-plan-template.pdf
+  Finance/
+    invoice-template.xlsx
+  HR/
+    employee-handbook.pdf
 ```
 
+- Folders are created automatically on first upload to each category.
+- Each file gets `anyoneWithLink` reader permission so download links work without authentication.
+- The service account must have **Editor** access to the root `DocMarket` folder.
 
-## Setting up PostHog
+---
 
-1. Create a PostHog account at [posthog.com](https://posthog.com)
-2. Get your Project API Key from [Project Settings](https://app.posthog.com/project/settings)
-3. Set `VITE_POSTHOG_KEY` in your `.env.local`
+## Google Sheets — Customer Log
 
-### Optional Configuration
+Create a spreadsheet and share it with the service account email (Editor access).
 
-- `VITE_POSTHOG_HOST` - Set this if you're using PostHog Cloud EU (`https://eu.i.posthog.com`) or self-hosting
+Create one sheet named **"Customers"** with these columns:
 
+| A | B | C | D | E | F | G | H |
+|---|---|---|---|---|---|---|---|
+| orderId | documentTitle | buyerName | buyerEmail | buyerPhone | buyerAddress | amount | purchasedAt |
 
-## T3Env
+A row is appended automatically every time a payment is confirmed (Xendit webhook fires with status=PAID).
 
-- You can use T3Env to add type safety to your environment variables.
-- Add Environment variables to the `src/env.mjs` file.
-- Use the environment variables in your code.
+---
 
-### Usage
+## Prisma Models
 
-```ts
-import { env } from "#/env";
+```prisma
+model Document {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  price         Float          // PHP
+  category      String
+  driveFileId   String         // Google Drive file ID
+  driveFileName String
+  driveFileUrl  String         // direct download URL
+  thumbnailUrl  String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  orders        Order[]
+}
 
-console.log(env.VITE_APP_TITLE);
-```
-
-
-
-
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
+model Order {
+  id               String    @id @default(cuid())
+  documentId       String
+  document         Document  @relation(...)
+  documentTitle    String
+  buyerName        String
+  buyerEmail       String
+  buyerPhone       String
+  buyerAddress     String?
+  amount           Float
+  status           String    @default("pending")  // pending | paid | failed
+  xenditInvoiceId  String?   @unique
+  xenditPaymentUrl String?
+  downloadToken    String?
+  downloadUrl      String?
+  createdAt        DateTime  @default(now())
+  paidAt           DateTime?
 }
 ```
 
-## API Routes
+---
 
-You can create API routes by using the `server` property in your route definitions:
+## Payment & Delivery Flow
 
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
+```
+Customer fills checkout form
+  → POST /api/payment/create-invoice
+  → Prisma: create Order { status: "pending" }
+  → Xendit: create PHP invoice
+  → Return paymentUrl → redirect customer to Xendit hosted page
 
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
+Customer pays on Xendit
+  → Xendit: POST /api/payment/webhook (x-callback-token header)
+  → Verify webhook token
+  → Prisma: update Order { status: "paid", downloadUrl, paidAt }
+  → Google Sheets: append customer record row
+  → Email customer download link
+
+Customer clicks download link → GET /api/download/{jwt-token}
+  → Verify JWT (72h expiry)
+  → 302 redirect to Google Drive direct download URL
 ```
 
-## Data Fetching
+---
 
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
+## Tech Stack
 
-For example:
+| Concern | Tool |
+|---------|------|
+| Framework | TanStack Start (React SSR) |
+| Routing | TanStack Router (file-based) |
+| Auth | Better Auth (email/password, admin role) |
+| Database ORM | Prisma 7 + PostgreSQL |
+| File storage | Google Drive API (service account) |
+| Customer log | Google Sheets API (service account) |
+| Payment | Xendit (invoice flow, PHP currency) |
+| Download tokens | JWT (72h expiry) |
+| Email | Nodemailer (SMTP) |
+| UI | shadcn/ui + Tailwind CSS v4 |
+| Analytics | PostHog |
 
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
+---
 
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
+## Environment Variables
 
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
+Copy `.env.local.example` to `.env.local` and fill in all values.
+
+```env
+# PostgreSQL
+DATABASE_URL=postgresql://user:pass@localhost:5432/docmarket
+
+# Better Auth
+BETTER_AUTH_SECRET=                     # 32+ random chars
+BETTER_AUTH_URL=http://localhost:3000
+
+# Xendit
+XENDIT_SECRET_KEY=xnd_production_...
+XENDIT_WEBHOOK_TOKEN=                   # from Xendit dashboard → Webhooks
+
+# Google (shared credentials for Drive + Sheets)
+GOOGLE_SERVICE_ACCOUNT_EMAIL=service-account@project.iam.gserviceaccount.com
+GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+
+# Google Drive
+GOOGLE_DRIVE_ROOT_FOLDER_ID=           # ID of DocMarket root folder in Drive
+
+# Google Sheets
+GOOGLE_SHEETS_ID=                      # Spreadsheet ID from URL
+
+# Download tokens
+DOWNLOAD_TOKEN_SECRET=                 # 32+ random chars
+
+# Admin seed account
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=
+
+# App base URL
+SERVER_URL=http://localhost:3000
+
+# Email (SMTP)
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=noreply@yourdomain.com
+
+# PostHog (optional)
+VITE_POSTHOG_KEY=
+VITE_POSTHOG_HOST=
 ```
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
+---
 
-# Demo files
+## Setup
 
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
+```bash
+# 1. Install dependencies
+npm install
 
-# Learn More
+# 2. Copy env template
+cp .env.local.example .env.local
+# Fill in all values
 
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+# 3. Generate Prisma client and push schema
+npm run db:generate
+npm run db:push
 
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+# 4. Seed admin account + sample documents
+npm run db:seed
+
+# 5. Start dev server
+npm run dev
+```
+
+### Google Cloud Setup
+
+1. Create a Google Cloud project.
+2. Enable **Google Drive API** and **Google Sheets API**.
+3. Create a **Service Account**, generate a JSON key.
+4. Copy `client_email` → `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+5. Copy `private_key` → `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` (keep the `\n` escapes)
+6. In Google Drive: create folder `DocMarket`, share it with the service account as **Editor**, copy the folder ID from the URL → `GOOGLE_DRIVE_ROOT_FOLDER_ID`
+7. In Google Sheets: create spreadsheet with "Customers" sheet, share with service account as **Editor**, copy spreadsheet ID from URL → `GOOGLE_SHEETS_ID`
+
+### Xendit Setup
+
+1. Create Xendit account at xendit.co
+2. Get secret key from Dashboard → Settings → API Keys → `XENDIT_SECRET_KEY`
+3. Set up webhook: Dashboard → Developers → Webhooks → add `{SERVER_URL}/api/payment/webhook` → copy the verification token → `XENDIT_WEBHOOK_TOKEN`
+
+---
+
+## Admin Panel
+
+Access at `/admin/login`. After logging in:
+
+- **Dashboard** (`/admin/dashboard`) — manage document listings, upload files, set pricing
+- **Orders** (`/admin/orders`) — view all orders, buyer info, payment status
+- **New Document** (`/admin/documents/new`) — drag & drop PDF/DOCX upload → auto-organized in Drive
+- **Edit Document** (`/admin/documents/:id/edit`) — update details or replace file
+
+---
+
+## Project Structure
+
+```
+src/
+  lib/
+    auth.ts           # Better Auth config
+    drive.ts          # Google Drive API client
+    sheets.ts         # Google Sheets API (customer records)
+    schemas.ts        # Zod validation schemas
+    xendit.ts         # Xendit payment client
+    download-token.ts # JWT token generation/verification
+    admin-guard.ts    # Admin session guard
+    mailer.ts         # Email delivery
+    db.ts             # Prisma client
+  routes/
+    index.tsx                           # Public storefront
+    documents/$id.tsx                   # Document detail page
+    checkout/$id.tsx                    # Buyer form + payment
+    payment/success.tsx                 # Post-payment success
+    payment/failed.tsx                  # Payment failure
+    admin/login.tsx                     # Admin login
+    _admin.tsx                          # Admin layout (auth guard)
+    _admin/admin/
+      dashboard.tsx                     # Document management
+      orders.tsx                        # Order history
+      documents/new.tsx                 # Create document
+      documents/$id/edit.tsx            # Edit document
+    api/
+      payment/create-invoice.ts         # Start checkout
+      payment/webhook.ts                # Xendit webhook
+      download/$token.ts                # Secure download
+      orders/$id.ts                     # Order status (public)
+      admin/
+        upload.ts                       # Drive file upload
+        documents/index.ts              # CRUD documents
+        documents/$id.ts                # CRUD single document
+        orders/index.ts                 # List orders
+  components/
+    DocumentCard.tsx    # Product card
+    DocumentForm.tsx    # Create/edit form with Drive upload
+    AdminSidebar.tsx    # Admin nav
+    OrderStatusBadge.tsx
+    Header.tsx
+    Footer.tsx
+```
