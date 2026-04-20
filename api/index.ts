@@ -37,7 +37,18 @@ function loadServer(): Promise<StartServer> {
 export default async function handler(request: Request): Promise<Response> {
   try {
     const server = await loadServer()
-    return await server.fetch(request)
+
+    // Vercel's Node.js runtime passes `request.url` as a relative path (e.g. "/")
+    // but TanStack Start's h3/srvx layer calls `new URL(request.url)` which requires
+    // an absolute URL. Reconstruct the full URL from forwarded headers.
+    const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? 'localhost'
+    const proto = request.headers.get('x-forwarded-proto') ?? 'https'
+    const absoluteUrl = request.url.startsWith('http')
+      ? request.url
+      : `${proto}://${host}${request.url}`
+    const fullRequest = absoluteUrl === request.url ? request : new Request(absoluteUrl, request)
+
+    return await server.fetch(fullRequest)
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     const stack = err instanceof Error ? err.stack : undefined
