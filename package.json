@@ -13,7 +13,7 @@
     "build": "dotenv -e .env.local -- prisma generate && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "vercel-build": "prisma generate && vite build",
+    "vercel-build": "prisma generate && NITRO_PRESET=vercel vite build",
     "post-cta-init": "npx -y create-db@latest --user-agent tanstack/tsrouter",
     "db:generate": "dotenv -e .env.local -- prisma generate",
     "db:push": "dotenv -e .env.local -- prisma db push",
