@@ -1,7 +1,7 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from "@tanstack/react-router";
 
 export default function Footer() {
-  const year = new Date().getFullYear()
+  const year = new Date().getFullYear();
 
   return (
     <footer className="mt-20 border-t border-[var(--line)] px-4 pb-14 pt-10 text-[var(--sea-ink-soft)]">
@@ -9,7 +9,9 @@ export default function Footer() {
         {/* Top row — brand + nav links */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <span className="text-sm font-semibold text-[var(--sea-ink)]">DocMarket</span>
+            <span className="text-sm font-semibold text-[var(--sea-ink)]">
+              DocMarket
+            </span>
             <p className="mt-1 max-w-xs text-xs leading-relaxed">
               Your trusted source for professional, ready-to-use documents.
               Purchase and download instantly after payment.
@@ -23,18 +25,14 @@ export default function Footer() {
             >
               Home
             </Link>
-            <Link
-              to="/terms"
+            <a
+              href="https://www.filepino.com/privacy-policy/"
               className="transition hover:text-[var(--sea-ink)] no-underline"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              Terms &amp; Conditions
-            </Link>
-            <Link
-              to="/privacy"
-              className="transition hover:text-[var(--sea-ink)] no-underline"
-            >
-              Privacy Policy
-            </Link>
+              Privacy Policy and Terms &amp; Conditions
+            </a>
           </nav>
         </div>
 
@@ -43,9 +41,7 @@ export default function Footer() {
 
         {/* Bottom row — copyright + powered by */}
         <div className="flex flex-col items-center gap-3 text-center text-xs sm:flex-row sm:justify-between sm:text-left">
-          <p className="m-0">
-            &copy; {year} DocMarket. All rights reserved.
-          </p>
+          <p className="m-0">&copy; {year} DocMarket. All rights reserved.</p>
           <p className="m-0 flex items-center gap-1.5">
             Powered by
             <a
@@ -69,5 +65,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
