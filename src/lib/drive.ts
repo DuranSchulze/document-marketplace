@@ -3,6 +3,9 @@ import { Readable } from "node:stream";
 import { env } from "@/env";
 
 function parsePrivateKey(raw: string): string {
+  if (!raw.includes("-----BEGIN")) {
+    return Buffer.from(raw, "base64").toString("utf-8").trim();
+  }
   return raw.replace(/\\n/g, "\n").trim();
 }
 

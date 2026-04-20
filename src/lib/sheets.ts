@@ -2,7 +2,11 @@ import { google } from 'googleapis'
 import { env } from '@/env'
 
 function parsePrivateKey(raw: string): string {
-  // Vercel sometimes double-escapes newlines; handle both cases
+  // If stored as base64 (no PEM header), decode it first
+  if (!raw.includes('-----BEGIN')) {
+    return Buffer.from(raw, 'base64').toString('utf-8').trim()
+  }
+  // Otherwise handle literal \n from Vercel env var storage
   return raw.replace(/\\n/g, '\n').trim()
 }
 
