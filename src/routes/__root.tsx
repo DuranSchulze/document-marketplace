@@ -3,37 +3,77 @@ import {
   Scripts,
   createRootRouteWithContext,
   useRouterState,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import Footer from '../components/Footer'
-import Header from '../components/Header'
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-import PostHogProvider from '../integrations/posthog/provider'
-import appCss from '../styles.css?url'
-import type { QueryClient } from '@tanstack/react-query'
+} from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import PostHogProvider from "../integrations/posthog/provider";
+import appCss from "../styles.css?url";
+import type { QueryClient } from "@tanstack/react-query";
 
 interface MyRouterContext {
-  queryClient: QueryClient
+  queryClient: QueryClient;
 }
 
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
+const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`;
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'DocMarket — Document Marketplace' },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "DocMarket — Document Marketplace" },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootDocument,
-})
+});
+
+function Devtools() {
+  const [node, setNode] = useState<React.ReactNode>(null);
+
+  useEffect(() => {
+    if (import.meta.env.PROD) return;
+
+    let mounted = true;
+
+    Promise.all([
+      import("@tanstack/react-devtools"),
+      import("@tanstack/react-router-devtools"),
+      import("@tanstack/react-query-devtools"),
+    ]).then(([reactDevtools, routerDevtools, queryDevtools]) => {
+      if (!mounted) return;
+
+      const TanStackDevtools = reactDevtools.TanStackDevtools;
+      const TanStackRouterDevtoolsPanel =
+        routerDevtools.TanStackRouterDevtoolsPanel;
+      const ReactQueryDevtoolsPanel = queryDevtools.ReactQueryDevtoolsPanel;
+
+      setNode(
+        <TanStackDevtools
+          config={{ position: "bottom-right" }}
+          plugins={[
+            {
+              name: "Tanstack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            { name: "Tanstack Query", render: <ReactQueryDevtoolsPanel /> },
+          ]}
+        />,
+      );
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return node;
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { location } = useRouterState()
-  const isAdminRoute = location.pathname.startsWith('/admin')
+  const { location } = useRouterState();
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -46,16 +86,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           {!isAdminRoute && <Header />}
           {children}
           {!isAdminRoute && <Footer />}
-          <TanStackDevtools
-            config={{ position: 'bottom-right' }}
-            plugins={[
-              { name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
-              TanStackQueryDevtools,
-            ]}
-          />
+          <Devtools />
         </PostHogProvider>
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
