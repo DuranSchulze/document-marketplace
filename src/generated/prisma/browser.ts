@@ -47,3 +47,13 @@ export type Document = Prisma.DocumentModel
  * 
  */
 export type Order = Prisma.OrderModel
+/**
+ * Model SubscriptionPlan
+ * 
+ */
+export type SubscriptionPlan = Prisma.SubscriptionPlanModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel

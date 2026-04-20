@@ -92,3 +92,31 @@ model Order {
   createdAt        DateTime  @default(now())
   paidAt           DateTime?
 }
+
+model SubscriptionPlan {
+  id            String         @id @default(cuid())
+  name          String
+  description   String
+  amount        Float
+  intervalCount Int            @default(1)
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                   String           @id @default(cuid())
+  planId               String
+  plan                 SubscriptionPlan @relation(fields: [planId], references: [id])
+  nomineeName          String
+  nomineeEmail         String
+  nomineePhone         String
+  nomineeAddress       String?
+  xenditSubscriptionId String?          @unique
+  checkoutUrl          String?
+  status               String           @default("pending")
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  activatedAt          DateTime?
+}
