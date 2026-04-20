@@ -21,6 +21,44 @@ export function isSheetsConfigured(): boolean {
   )
 }
 
+export async function checkSheetsConnection(): Promise<{ ok: boolean; error?: string; title?: string }> {
+  if (!isSheetsConfigured()) {
+    return { ok: false, error: 'Missing env vars (GOOGLE_SHEETS_ID, GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY)' }
+  }
+  try {
+    const sheets = getSheetsClient()
+    const res = await sheets.spreadsheets.get({
+      spreadsheetId: env.GOOGLE_SHEETS_ID!,
+      fields: 'properties.title',
+    })
+    return { ok: true, title: res.data.properties?.title ?? undefined }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown Sheets error'
+    return { ok: false, error: message }
+  }
+}
+
+export async function testSheetsWrite(): Promise<{ ok: boolean; error?: string; cell?: string; value?: string }> {
+  if (!isSheetsConfigured()) {
+    return { ok: false, error: 'Sheets not configured' }
+  }
+  try {
+    const sheets = getSheetsClient()
+    const cell = 'Customers!Z1'
+    const value = `health-check ${new Date().toISOString()}`
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: env.GOOGLE_SHEETS_ID!,
+      range: cell,
+      valueInputOption: 'RAW',
+      requestBody: { values: [[value]] },
+    })
+    return { ok: true, cell, value }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown Sheets write error'
+    return { ok: false, error: message }
+  }
+}
+
 export interface CustomerRecord {
   orderId: string
   documentTitle: string

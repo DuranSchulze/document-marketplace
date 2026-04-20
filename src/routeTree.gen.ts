@@ -25,6 +25,8 @@ import { Route as ApiOrdersIdRouteImport } from './routes/api/orders/$id'
 import { Route as ApiDownloadTokenRouteImport } from './routes/api/download/$token'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
+import { Route as ApiAdminSheetsTestWriteRouteImport } from './routes/api/admin/sheets-test-write'
+import { Route as ApiAdminGoogleStatusRouteImport } from './routes/api/admin/google-status'
 import { Route as AdminAdminOrdersRouteImport } from './routes/_admin/admin/orders'
 import { Route as AdminAdminDashboardRouteImport } from './routes/_admin/admin/dashboard'
 import { Route as ApiAdminOrdersIndexRouteImport } from './routes/api/admin/orders/index'
@@ -112,6 +114,16 @@ const ApiAdminUploadRoute = ApiAdminUploadRouteImport.update({
   path: '/api/admin/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminSheetsTestWriteRoute = ApiAdminSheetsTestWriteRouteImport.update({
+  id: '/api/admin/sheets-test-write',
+  path: '/api/admin/sheets-test-write',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminGoogleStatusRoute = ApiAdminGoogleStatusRouteImport.update({
+  id: '/api/admin/google-status',
+  path: '/api/admin/google-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAdminOrdersRoute = AdminAdminOrdersRouteImport.update({
   id: '/admin/orders',
   path: '/admin/orders',
@@ -161,6 +173,8 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/orders': typeof AdminAdminOrdersRoute
+  '/api/admin/google-status': typeof ApiAdminGoogleStatusRoute
+  '/api/admin/sheets-test-write': typeof ApiAdminSheetsTestWriteRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$token': typeof ApiDownloadTokenRoute
@@ -185,6 +199,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/orders': typeof AdminAdminOrdersRoute
+  '/api/admin/google-status': typeof ApiAdminGoogleStatusRoute
+  '/api/admin/sheets-test-write': typeof ApiAdminSheetsTestWriteRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$token': typeof ApiDownloadTokenRoute
@@ -211,6 +227,8 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/_admin/admin/dashboard': typeof AdminAdminDashboardRoute
   '/_admin/admin/orders': typeof AdminAdminOrdersRoute
+  '/api/admin/google-status': typeof ApiAdminGoogleStatusRoute
+  '/api/admin/sheets-test-write': typeof ApiAdminSheetsTestWriteRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$token': typeof ApiDownloadTokenRoute
@@ -237,6 +255,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/dashboard'
     | '/admin/orders'
+    | '/api/admin/google-status'
+    | '/api/admin/sheets-test-write'
     | '/api/admin/upload'
     | '/api/auth/$'
     | '/api/download/$token'
@@ -261,6 +281,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/dashboard'
     | '/admin/orders'
+    | '/api/admin/google-status'
+    | '/api/admin/sheets-test-write'
     | '/api/admin/upload'
     | '/api/auth/$'
     | '/api/download/$token'
@@ -286,6 +308,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/_admin/admin/dashboard'
     | '/_admin/admin/orders'
+    | '/api/admin/google-status'
+    | '/api/admin/sheets-test-write'
     | '/api/admin/upload'
     | '/api/auth/$'
     | '/api/download/$token'
@@ -310,6 +334,8 @@ export interface RootRouteChildren {
   PaymentFailedRoute: typeof PaymentFailedRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ApiAdminGoogleStatusRoute: typeof ApiAdminGoogleStatusRoute
+  ApiAdminSheetsTestWriteRoute: typeof ApiAdminSheetsTestWriteRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiDownloadTokenRoute: typeof ApiDownloadTokenRoute
@@ -435,6 +461,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/sheets-test-write': {
+      id: '/api/admin/sheets-test-write'
+      path: '/api/admin/sheets-test-write'
+      fullPath: '/api/admin/sheets-test-write'
+      preLoaderRoute: typeof ApiAdminSheetsTestWriteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/google-status': {
+      id: '/api/admin/google-status'
+      path: '/api/admin/google-status'
+      fullPath: '/api/admin/google-status'
+      preLoaderRoute: typeof ApiAdminGoogleStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_admin/admin/orders': {
       id: '/_admin/admin/orders'
       path: '/admin/orders'
@@ -514,6 +554,8 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentFailedRoute: PaymentFailedRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ApiAdminGoogleStatusRoute: ApiAdminGoogleStatusRoute,
+  ApiAdminSheetsTestWriteRoute: ApiAdminSheetsTestWriteRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiDownloadTokenRoute: ApiDownloadTokenRoute,

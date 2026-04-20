@@ -1,12 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { requireAdmin } from '#/lib/admin-guard'
+import { requireAdminApi } from '#/lib/admin-guard'
 import { uploadFileToDrive, isDriveConfigured } from '#/lib/drive'
 
 export const Route = createFileRoute('/api/admin/upload')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        await requireAdmin(request)
+        const unauthorized = await requireAdminApi(request)
+        if (unauthorized) return unauthorized
 
         if (!isDriveConfigured()) {
           return Response.json({ error: 'Google Drive is not configured' }, { status: 503 })

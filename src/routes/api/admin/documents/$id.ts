@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { requireAdmin } from '#/lib/admin-guard'
+import { requireAdminApi } from '#/lib/admin-guard'
 import { DocumentUpdateSchema } from '#/lib/schemas'
 import { prisma } from '#/db'
 
@@ -7,7 +7,8 @@ export const Route = createFileRoute('/api/admin/documents/$id')({
   server: {
     handlers: {
       PATCH: async ({ request, params }) => {
-        await requireAdmin(request)
+        const unauthorized = await requireAdminApi(request)
+        if (unauthorized) return unauthorized
         let body
         try {
           body = DocumentUpdateSchema.parse(await request.json())
@@ -21,7 +22,8 @@ export const Route = createFileRoute('/api/admin/documents/$id')({
         return Response.json(doc)
       },
       DELETE: async ({ request, params }) => {
-        await requireAdmin(request)
+        const unauthorized = await requireAdminApi(request)
+        if (unauthorized) return unauthorized
         await prisma.document.update({
           where: { id: params.id },
           data: { isActive: false },
