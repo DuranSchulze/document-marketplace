@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "vite build && npm run db:generate",
     "preview": "vite preview",
     "test": "vitest run",
     "post-cta-init": "npx -y create-db@latest --user-agent tanstack/tsrouter",
