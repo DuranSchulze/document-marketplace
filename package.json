@@ -5,6 +5,9 @@
   "imports": {
     "#/*": "./src/*"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "dotenv -e .env.local -- prisma generate && vite build",
