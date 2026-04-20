@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 import { Readable } from "node:stream";
-import { env } from "#/env";
+import { env } from "@/env";
 
 function getDriveClient() {
   const privateKey = (env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? "").replace(

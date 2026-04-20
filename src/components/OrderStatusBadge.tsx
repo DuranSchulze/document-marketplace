@@ -1,5 +1,5 @@
-import { Badge } from '#/components/ui/badge'
-import type { Order } from '#/lib/schemas'
+import { Badge } from '@/components/ui/badge'
+import type { Order } from '@/lib/schemas'
 
 const config: Record<Order['status'], { label: string; className: string }> = {
   pending: { label: 'Pending', className: 'bg-amber-100 text-amber-800 border-amber-200' },

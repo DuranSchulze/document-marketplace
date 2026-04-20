@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import Link from 'next/link'
 
 interface DocumentLike {
   id: string
@@ -47,8 +47,7 @@ export function DocumentCard({ document, index = 0 }: Props) {
             ₱{document.price.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
           </span>
           <Link
-            to="/documents/$id"
-            params={{ id: document.id }}
+            href={`/documents/${document.id}`}
             className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-4 py-1.5 text-xs font-semibold text-[var(--lagoon-deep)] no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]"
           >
             View Details

@@ -1,10 +1,10 @@
 import { useState, useRef, useCallback } from 'react'
-import { DocumentCreateSchema, type DocumentCreateInput } from '#/lib/schemas'
-import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
-import { Label } from '#/components/ui/label'
-import { Textarea } from '#/components/ui/textarea'
-import { Switch } from '#/components/ui/switch'
+import { DocumentCreateSchema, type DocumentCreateInput } from '@/lib/schemas'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
 
 const CATEGORIES = ['Legal', 'Business', 'Finance', 'HR', 'Academic', 'Government', 'Other']
 

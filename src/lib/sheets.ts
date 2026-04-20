@@ -1,5 +1,5 @@
 import { google } from 'googleapis'
-import { env } from '#/env'
+import { env } from '@/env'
 
 function getSheetsClient() {
   const privateKey = (env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? '').replace(/\\n/g, '\n')

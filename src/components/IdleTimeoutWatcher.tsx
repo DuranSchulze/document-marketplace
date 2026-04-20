@@ -1,69 +1,61 @@
-import { useEffect, useRef } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { authClient } from "#/lib/auth-client";
+'use client'
 
-/** Sign the admin out after this many ms of inactivity. */
-const IDLE_LIMIT_MS = 30 * 60 * 1000; // 30 minutes
+import { useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { authClient } from '@/lib/auth-client'
 
-/** How often to check whether the idle limit has been crossed. */
-const CHECK_INTERVAL_MS = 60 * 1000; // 1 minute
-
-/** Throttle activity events so we only touch the ref at most every N ms. */
-const ACTIVITY_THROTTLE_MS = 30 * 1000; // 30 seconds
+const IDLE_LIMIT_MS = 30 * 60 * 1000
+const CHECK_INTERVAL_MS = 60 * 1000
+const ACTIVITY_THROTTLE_MS = 30 * 1000
 
 const ACTIVITY_EVENTS: Array<keyof WindowEventMap> = [
-  "mousemove",
-  "mousedown",
-  "keydown",
-  "scroll",
-  "touchstart",
-  "click",
-];
+  'mousemove',
+  'mousedown',
+  'keydown',
+  'scroll',
+  'touchstart',
+  'click',
+]
 
-/**
- * Client-only watcher. Mount once inside the admin layout. Signs the user
- * out + redirects to /admin/login?reason=idle after IDLE_LIMIT_MS of no
- * activity. Uses a ref + throttled listeners to keep overhead tiny.
- */
 export function IdleTimeoutWatcher() {
-  const navigate = useNavigate();
-  const lastActivityRef = useRef<number>(Date.now());
-  const signedOutRef = useRef(false);
+  const router = useRouter()
+  const lastActivityRef = useRef<number>(Date.now())
+  const signedOutRef = useRef(false)
 
   useEffect(() => {
-    let lastMark = 0;
+    let lastMark = 0
     const markActivity = () => {
-      const now = Date.now();
-      if (now - lastMark < ACTIVITY_THROTTLE_MS) return;
-      lastMark = now;
-      lastActivityRef.current = now;
-    };
+      const now = Date.now()
+      if (now - lastMark < ACTIVITY_THROTTLE_MS) return
+      lastMark = now
+      lastActivityRef.current = now
+    }
 
     ACTIVITY_EVENTS.forEach((evt) => {
-      window.addEventListener(evt, markActivity, { passive: true });
-    });
+      window.addEventListener(evt, markActivity, { passive: true })
+    })
 
     const interval = window.setInterval(async () => {
-      if (signedOutRef.current) return;
-      const idleFor = Date.now() - lastActivityRef.current;
+      if (signedOutRef.current) return
+      const idleFor = Date.now() - lastActivityRef.current
       if (idleFor >= IDLE_LIMIT_MS) {
-        signedOutRef.current = true;
+        signedOutRef.current = true
         try {
-          await authClient.signOut();
+          await authClient.signOut()
         } catch {
-          // ignore — we still redirect below
+          // ignore — still redirect
         }
-        navigate({ to: "/admin/login", search: { reason: "idle" } });
+        router.push('/admin/login?reason=idle')
       }
-    }, CHECK_INTERVAL_MS);
+    }, CHECK_INTERVAL_MS)
 
     return () => {
       ACTIVITY_EVENTS.forEach((evt) => {
-        window.removeEventListener(evt, markActivity);
-      });
-      window.clearInterval(interval);
-    };
-  }, [navigate]);
+        window.removeEventListener(evt, markActivity)
+      })
+      window.clearInterval(interval)
+    }
+  }, [router])
 
-  return null;
+  return null
 }

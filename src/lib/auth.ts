@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
-import { tanstackStartCookies } from 'better-auth/tanstack-start'
-import { prisma } from '#/db'
+import { nextCookies } from 'better-auth/next-js'
+import { prisma } from '@/db'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -31,7 +31,7 @@ export const auth = betterAuth({
       secure: isProd,
     },
   },
-  plugins: [tanstackStartCookies()],
+  plugins: [nextCookies()],
   user: {
     additionalFields: {
       role: {

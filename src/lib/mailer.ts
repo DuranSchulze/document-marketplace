@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import { env } from '#/env'
+import { env } from '@/env'
 
 function getTransporter() {
   if (!env.SMTP_HOST) return null

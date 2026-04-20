@@ -1,12 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import Link from 'next/link'
 
 export default function Footer() {
-  const year = new Date().getFullYear();
+  const year = new Date().getFullYear()
 
   return (
     <footer className="mt-20 border-t border-[var(--line)] px-4 pb-14 pt-10 text-[var(--sea-ink-soft)]">
       <div className="page-wrap">
-        {/* Top row — brand + nav links */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <span className="text-sm font-semibold text-[var(--sea-ink)]">
@@ -19,10 +18,7 @@ export default function Footer() {
           </div>
 
           <nav className="flex flex-col gap-2 text-sm sm:items-end">
-            <Link
-              to="/"
-              className="transition hover:text-[var(--sea-ink)] no-underline"
-            >
+            <Link href="/" className="transition hover:text-[var(--sea-ink)] no-underline">
               Home
             </Link>
             <a
@@ -36,10 +32,8 @@ export default function Footer() {
           </nav>
         </div>
 
-        {/* Divider */}
         <div className="my-8 border-t border-[var(--line)]" />
 
-        {/* Bottom row — copyright + powered by */}
         <div className="flex flex-col items-center gap-3 text-center text-xs sm:flex-row sm:justify-between sm:text-left">
           <p className="m-0">&copy; {year} DocMarket. All rights reserved.</p>
           <p className="m-0 flex items-center gap-1.5">
@@ -65,5 +59,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

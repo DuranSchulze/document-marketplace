@@ -1,10 +1,12 @@
-import { Link, useRouterState } from '@tanstack/react-router'
-import { authClient } from '#/lib/auth-client'
-import { useNavigate } from '@tanstack/react-router'
+'use client'
+
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { authClient } from '@/lib/auth-client'
 
 const navItems = [
   {
-    to: '/admin/dashboard' as const,
+    to: '/admin/dashboard',
     label: 'Documents',
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -13,7 +15,7 @@ const navItems = [
     ),
   },
   {
-    to: '/admin/orders' as const,
+    to: '/admin/orders',
     label: 'Orders',
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,12 +26,12 @@ const navItems = [
 ]
 
 export function AdminSidebar() {
-  const { location } = useRouterState()
-  const navigate = useNavigate()
+  const pathname = usePathname()
+  const router = useRouter()
 
   async function handleSignOut() {
     await authClient.signOut()
-    navigate({ to: '/admin/login' })
+    router.push('/admin/login')
   }
 
   return (
@@ -41,11 +43,11 @@ export function AdminSidebar() {
 
       <nav className="flex-1 p-3 space-y-1">
         {navItems.map((item) => {
-          const active = location.pathname.startsWith(item.to)
+          const active = pathname.startsWith(item.to)
           return (
             <Link
               key={item.to}
-              to={item.to}
+              href={item.to}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium no-underline transition-colors ${
                 active
                   ? 'bg-[rgba(79,184,178,0.14)] text-[var(--lagoon-deep)]'
@@ -61,7 +63,7 @@ export function AdminSidebar() {
 
       <div className="p-3 border-t border-[rgba(23,58,64,0.08)]">
         <Link
-          to="/"
+          href="/"
           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--sea-ink-soft)] no-underline hover:bg-[rgba(23,58,64,0.04)] hover:text-[var(--sea-ink)] transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
