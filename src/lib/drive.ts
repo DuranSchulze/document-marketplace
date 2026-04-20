@@ -2,11 +2,12 @@ import { google } from "googleapis";
 import { Readable } from "node:stream";
 import { env } from "@/env";
 
+function parsePrivateKey(raw: string): string {
+  return raw.replace(/\\n/g, "\n").trim();
+}
+
 function getDriveClient() {
-  const privateKey = (env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? "").replace(
-    /\\n/g,
-    "\n",
-  );
+  const privateKey = parsePrivateKey(env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? "");
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -46,7 +47,11 @@ export async function checkDriveConnection(): Promise<{
     });
     return { ok: true, folderName: res.data.name ?? undefined };
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown Drive error";
+    const raw = err instanceof Error ? err.message : "Unknown Drive error";
+    const message =
+      raw.includes("401") || raw.toLowerCase().includes("invalid authentication")
+        ? "401 — Share the Drive folder with your service account email, or check GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY in Vercel env vars"
+        : raw;
     return { ok: false, error: message };
   }
 }

@@ -1,8 +1,13 @@
 import { google } from 'googleapis'
 import { env } from '@/env'
 
+function parsePrivateKey(raw: string): string {
+  // Vercel sometimes double-escapes newlines; handle both cases
+  return raw.replace(/\\n/g, '\n').trim()
+}
+
 function getSheetsClient() {
-  const privateKey = (env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? '').replace(/\\n/g, '\n')
+  const privateKey = parsePrivateKey(env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? '')
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -33,7 +38,10 @@ export async function checkSheetsConnection(): Promise<{ ok: boolean; error?: st
     })
     return { ok: true, title: res.data.properties?.title ?? undefined }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown Sheets error'
+    const raw = err instanceof Error ? err.message : 'Unknown Sheets error'
+    const message = raw.includes('401') || raw.toLowerCase().includes('invalid authentication')
+      ? '401 — Share the sheet with your service account email, or check GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY in Vercel env vars'
+      : raw
     return { ok: false, error: message }
   }
 }
