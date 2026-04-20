@@ -33,7 +33,7 @@ export const Route = createFileRoute('/api/payment/webhook')({
           if (order.status === 'paid') return new Response('OK', { status: 200 })
 
           const driveFileUrl = order.document.driveFileUrl
-          const baseUrl = env.SERVER_URL ?? 'http://localhost:3000'
+          const baseUrl = env.SERVER_URL ?? new URL(request.url).origin
 
           const token = generateDownloadToken({
             orderId: order.id,

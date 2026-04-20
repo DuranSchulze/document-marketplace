@@ -27,7 +27,7 @@ export const Route = createFileRoute('/api/payment/create-invoice')({
 
         // Pre-generate orderId so redirect URLs can include it before DB write
         const orderId = crypto.randomUUID()
-        const baseUrl = env.SERVER_URL ?? 'http://localhost:3000'
+        const baseUrl = env.SERVER_URL ?? new URL(request.url).origin
 
         const invoice = await createXenditInvoice({
           externalId: orderId,
