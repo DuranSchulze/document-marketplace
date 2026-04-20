@@ -1,70 +1,117 @@
-// Vercel Serverless Function entry that adapts the TanStack Start Web
-// fetch handler (produced by `vite build` into `dist/server/server.js`)
-// to Vercel's Node runtime.
+// Vercel Serverless Function entry — bridges Node.js IncomingMessage/ServerResponse
+// to the Web-standard fetch handler that TanStack Start (h3/srvx) expects.
 //
-// The build step (`vercel-build`) runs `vite build` BEFORE Vercel bundles
-// this function, so `dist/server/server.js` is guaranteed to exist and is
-// traced into the function bundle via @vercel/nft + `includeFiles` in
-// `vercel.json`.
-//
-// All HTTP routes — SSR'd pages, TanStack Start server functions, and
-// `src/routes/api/**` handlers — are routed through this single function
-// via the `rewrites` rule in `vercel.json`.
-//
-// We use a dynamic import inside the handler so that any error thrown
-// during module initialisation (e.g. a missing env var) is caught and
-// returned as a readable JSON response instead of crashing the cold
-// start with a generic FUNCTION_INVOCATION_FAILED.
+// Vercel's Node.js runtime calls handlers as (req, res) not as
+// (request: Request) => Promise<Response>, so we manually convert both ways.
 
-export const config = {
-  runtime: 'nodejs',
-}
+import type { IncomingMessage, ServerResponse } from 'node:http'
+import { Readable } from 'node:stream'
 
 type StartServer = { fetch: (req: Request) => Promise<Response> }
+type NodeRequest = IncomingMessage & { headers: IncomingMessage['headers']; method?: string; url?: string }
 
 let serverPromise: Promise<StartServer> | undefined
 
 function loadServer(): Promise<StartServer> {
   if (!serverPromise) {
-    // @ts-expect-error — generated at build time, not present in the
-    // source tree; Vercel's nft traces this path because of the literal
-    // string + `includeFiles: dist/server/**` in vercel.json.
+    // @ts-expect-error — generated at build time; traced into the bundle via
+    // includeFiles: "dist/server/**" in vercel.json.
     serverPromise = import('../dist/server/server.js').then((mod) => mod.default as StartServer)
   }
   return serverPromise
 }
 
-export default async function handler(request: Request): Promise<Response> {
+function isWebRequest(value: unknown): value is Request {
+  return value instanceof Request
+}
+
+function nodeToWebRequest(req: NodeRequest): Request {
+  const rawHost = req.headers['x-forwarded-host'] ?? req.headers['host'] ?? 'localhost'
+  const host = Array.isArray(rawHost) ? rawHost[0] : rawHost
+
+  const rawProto = req.headers['x-forwarded-proto'] ?? 'https'
+  const proto = Array.isArray(rawProto) ? rawProto[0] : rawProto
+
+  const url = new URL(req.url ?? '/', `${proto}://${host}`)
+
+  const headers = new Headers()
+  for (const [key, raw] of Object.entries(req.headers)) {
+    if (!raw) continue
+    if (Array.isArray(raw)) {
+      for (const v of raw) headers.append(key, v)
+    } else {
+      headers.set(key, raw)
+    }
+  }
+
+  const method = req.method ?? 'GET'
+  const hasBody = method !== 'GET' && method !== 'HEAD'
+
+  const init: RequestInit & { duplex?: 'half' } = {
+    method,
+    headers,
+  }
+
+  if (hasBody) {
+    init.body = Readable.toWeb(req) as ReadableStream
+    init.duplex = 'half'
+  }
+
+  return new Request(url.toString(), init)
+}
+
+async function webResponseToNode(response: Response, res: ServerResponse): Promise<void> {
+  res.statusCode = response.status
+
+  response.headers.forEach((value, key) => {
+    if (key.toLowerCase() !== 'set-cookie') res.setHeader(key, value)
+  })
+  // set-cookie values must NOT be comma-joined — write as an array
+  const cookies = response.headers.getSetCookie()
+  if (cookies.length > 0) res.setHeader('set-cookie', cookies)
+
+  if (response.body) {
+    const reader = response.body.getReader()
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        res.write(value)
+      }
+    } finally {
+      reader.releaseLock()
+    }
+  }
+
+  res.end()
+}
+
+export default async function handler(req: Request): Promise<Response>
+export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void>
+export default async function handler(req: Request | IncomingMessage, res?: ServerResponse): Promise<Response | void> {
   try {
     const server = await loadServer()
+    const webRequest = isWebRequest(req) ? req : nodeToWebRequest(req as NodeRequest)
+    const webResponse = await server.fetch(webRequest)
 
-    // Vercel's Node.js runtime passes `request.url` as a relative path (e.g. "/")
-    // but TanStack Start's h3/srvx layer calls `new URL(request.url)` which requires
-    // an absolute URL. Reconstruct the full URL from forwarded headers.
-    const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? 'localhost'
-    const proto = request.headers.get('x-forwarded-proto') ?? 'https'
-    const absoluteUrl = request.url.startsWith('http')
-      ? request.url
-      : `${proto}://${host}${request.url}`
-    const fullRequest = absoluteUrl === request.url ? request : new Request(absoluteUrl, request)
+    if (!res) {
+      return webResponse
+    }
 
-    return await server.fetch(fullRequest)
+    await webResponseToNode(webResponse, res)
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     const stack = err instanceof Error ? err.stack : undefined
     console.error('[api/index] handler error:', err)
-    return new Response(
-      JSON.stringify({
-        error: 'Internal Server Error',
-        message,
-        // Stack intentionally included in all envs while stabilising
-        // the deployment. Remove once the function is healthy.
-        stack,
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    )
+
+    if (!res) {
+      return Response.json({ error: 'Internal Server Error', message, stack }, { status: 500 })
+    }
+
+    if (!res.headersSent) {
+      res.statusCode = 500
+      res.setHeader('Content-Type', 'application/json')
+    }
+    res.end(JSON.stringify({ error: 'Internal Server Error', message, stack }))
   }
 }
