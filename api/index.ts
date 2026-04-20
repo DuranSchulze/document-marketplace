@@ -15,8 +15,8 @@ let serverPromise: Promise<StartServer> | undefined
 function loadServer(): Promise<StartServer> {
   if (!serverPromise) {
     // @ts-expect-error — generated at build time; traced into the bundle via
-    // includeFiles: "dist/server/**" in vercel.json.
-    serverPromise = import('../dist/server/server.js').then((mod) => mod.default as StartServer)
+    // includeFiles in vercel.json.
+    serverPromise = import('../.output/server/_libs/_3.mjs').then((mod) => mod.default as StartServer)
   }
   return serverPromise
 }
