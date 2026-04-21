@@ -1,2 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/orders-cSIwZG69.js","assets/useRouter-CoxmGirt.js","assets/badge-DtrdQ8cN.js","assets/utils-BYGbda4q.js"])))=>i.map(i=>d[i]);
-import{n as e,t}from"./createServerFn-DdLMrg0L.js";import{n,r,t as i}from"./preload-helper-dxASeC7u.js";var a=()=>i(()=>import(`./orders-cSIwZG69.js`),__vite__mapDeps([0,1,2,3])),o=t().handler(e(`278a9dc39dddb9e463e5ccaa2f561f671d7ee7f2a27bb10c930fe86834fc958f`)),s=r(`/_admin/admin/orders`)({loader:()=>o(),component:n(a,`component`)});export{s as t};

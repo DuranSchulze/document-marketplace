@@ -1,2 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/failed-hwExkzWx.js","assets/useRouter-CoxmGirt.js","assets/link-n7Nb8hyk.js","assets/useStore-7zvzg6os.js"])))=>i.map(i=>d[i]);
-import{n as e,r as t,t as n}from"./preload-helper-dxASeC7u.js";import{o as r,s as i}from"./schemas-fdGxRvt4.js";var a=t(`/payment/failed`)({validateSearch:r({orderId:i().optional(),documentId:i().optional()}),component:e(()=>n(()=>import(`./failed-hwExkzWx.js`),__vite__mapDeps([0,1,2,3])),`component`)});export{a as t};
