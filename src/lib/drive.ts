@@ -73,6 +73,8 @@ async function getOrCreateCategoryFolder(
     q: `name='${categoryName}' and '${rootFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
     fields: "files(id, name)",
     spaces: "drive",
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
   });
 
   const existing = search.data.files?.[0];
@@ -85,6 +87,7 @@ async function getOrCreateCategoryFolder(
       parents: [rootFolderId],
     },
     fields: "id",
+    supportsAllDrives: true,
   });
 
   return created.data.id!;
@@ -109,6 +112,7 @@ export async function uploadFileToDrive(
       body: Readable.from(fileBuffer),
     },
     fields: "id, name",
+    supportsAllDrives: true,
   });
 
   const fileId = uploaded.data.id!;
@@ -119,6 +123,7 @@ export async function uploadFileToDrive(
       role: "reader",
       type: "anyone",
     },
+    supportsAllDrives: true,
   });
 
   return {
