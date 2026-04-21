@@ -106,17 +106,20 @@ model SubscriptionPlan {
 }
 
 model Subscription {
-  id                   String           @id @default(cuid())
-  planId               String
-  plan                 SubscriptionPlan @relation(fields: [planId], references: [id])
-  nomineeName          String
-  nomineeEmail         String
-  nomineePhone         String
-  nomineeAddress       String?
-  xenditSubscriptionId String?          @unique
-  checkoutUrl          String?
-  status               String           @default("pending")
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-  activatedAt          DateTime?
+  id                    String           @id @default(cuid())
+  planId                String
+  plan                  SubscriptionPlan @relation(fields: [planId], references: [id])
+  nomineeName           String
+  nomineeEmail          String
+  nomineePhone          String
+  nomineeAddress        String?
+  paymentChannel        String?
+  xenditCustomerId      String?
+  xenditPaymentMethodId String?          @unique
+  xenditSubscriptionId  String?          @unique
+  authUrl               String?
+  status                String           @default("pending")
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  activatedAt           DateTime?
 }

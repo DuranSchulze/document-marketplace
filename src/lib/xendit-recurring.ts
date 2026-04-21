@@ -14,40 +14,97 @@ function xenditFetch(path: string, init: RequestInit = {}) {
   })
 }
 
-export interface CreateRecurringPlanParams {
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '')
+  if (digits.startsWith('63')) return `+${digits}`
+  if (digits.startsWith('0')) return `+63${digits.slice(1)}`
+  return `+63${digits}`
+}
+
+// Step 1: Create a Xendit customer
+export async function createXenditCustomer(params: {
   referenceId: string
+  givenNames: string
+  email: string
+  mobileNumber: string
+}): Promise<{ id: string }> {
+  const res = await xenditFetch('/customers', {
+    method: 'POST',
+    body: JSON.stringify({
+      reference_id: params.referenceId,
+      type: 'INDIVIDUAL',
+      email: params.email,
+      mobile_number: normalizePhone(params.mobileNumber),
+      individual_detail: {
+        given_names: params.givenNames,
+      },
+    }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Xendit customer error ${res.status}: ${text}`)
+  }
+  const data = await res.json() as { id: string }
+  return { id: data.id }
+}
+
+// Step 2: Create a reusable e-wallet payment method and get the auth URL
+export async function createXenditPaymentMethod(params: {
+  customerId: string
+  channelCode: 'GCASH' | 'PAYMAYA'
+  successReturnUrl: string
+  failureReturnUrl: string
+  cancelReturnUrl: string
+}): Promise<{ id: string; authUrl: string }> {
+  const res = await xenditFetch('/v2/payment_methods', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: 'EWALLET',
+      reusability: 'MULTIPLE_USE',
+      customer_id: params.customerId,
+      ewallet: {
+        channel_code: params.channelCode,
+        channel_properties: {
+          success_return_url: params.successReturnUrl,
+          failure_return_url: params.failureReturnUrl,
+          cancel_return_url: params.cancelReturnUrl,
+        },
+      },
+    }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Xendit payment method error ${res.status}: ${text}`)
+  }
+  const data = await res.json() as {
+    id: string
+    actions?: Array<{ action: string; url: string; url_type: string }>
+  }
+  const action = data.actions?.find((a) => a.action === 'AUTH')
+  if (!action?.url) throw new Error('No auth URL returned from Xendit payment method')
+  return { id: data.id, authUrl: action.url }
+}
+
+// Step 3: Create the recurring plan (called after payment_method.activated webhook)
+export async function createXenditRecurringPlan(params: {
+  referenceId: string
+  customerId: string
+  paymentMethodId: string
   amount: number
   intervalCount: number
   description: string
   successReturnUrl: string
   failureReturnUrl: string
-  customerName: string
-  customerEmail: string
-  customerPhone?: string
-}
-
-export interface XenditRecurringPlan {
-  id: string
-  reference_id: string
-  status: string
-  actions: Array<{ url: string; url_type: string; method: string }>
-  amount: number
-}
-
-// Creates a recurring plan + immediately triggers the first payment authorization.
-// Returns the plan with an 'actions' array that contains the checkout_url.
-export async function createXenditRecurringPlan(
-  params: CreateRecurringPlanParams,
-): Promise<XenditRecurringPlan> {
+}): Promise<{ id: string }> {
   const res = await xenditFetch('/recurring/plans', {
     method: 'POST',
     body: JSON.stringify({
       reference_id: params.referenceId,
-      customer_id: null,
+      customer_id: params.customerId,
       recurring_action: 'PAYMENT',
       currency: 'PHP',
       amount: params.amount,
-      payment_methods: [{ rank: 1 }],
+      payment_methods: [{ payment_method_id: params.paymentMethodId, rank: 1 }],
       schedule: {
         reference_id: `sched_${params.referenceId}`,
         interval: 'MONTH',
@@ -60,28 +117,15 @@ export async function createXenditRecurringPlan(
         recurring_succeeded: ['EMAIL'],
         recurring_failed: ['EMAIL'],
       },
-      metadata: {
-        customer_name: params.customerName,
-        customer_email: params.customerEmail,
-        customer_phone: params.customerPhone ?? '',
-      },
       success_return_url: params.successReturnUrl,
       failure_return_url: params.failureReturnUrl,
       description: params.description,
     }),
   })
-
   if (!res.ok) {
     const text = await res.text()
-    throw new Error(`Xendit recurring error ${res.status}: ${text}`)
+    throw new Error(`Xendit recurring plan error ${res.status}: ${text}`)
   }
-
-  return res.json() as Promise<XenditRecurringPlan>
-}
-
-export function getCheckoutUrl(plan: XenditRecurringPlan): string | null {
-  const action = plan.actions?.find(
-    (a) => a.url_type === 'WEB' || a.url_type === 'MOBILE' || a.url,
-  )
-  return action?.url ?? null
+  const data = await res.json() as { id: string }
+  return { id: data.id }
 }

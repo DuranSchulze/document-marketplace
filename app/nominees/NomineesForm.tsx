@@ -13,8 +13,16 @@ interface Plan {
   intervalCount: number
 }
 
+type PaymentChannel = 'GCASH' | 'PAYMAYA'
+
+const PAYMENT_CHANNELS: { value: PaymentChannel; label: string; icon: string }[] = [
+  { value: 'GCASH', label: 'GCash', icon: '💙' },
+  { value: 'PAYMAYA', label: 'Maya', icon: '💚' },
+]
+
 export function NomineesForm({ plans }: { plans: Plan[] }) {
   const [selectedPlan, setSelectedPlan] = useState<string>(plans[0]?.id ?? '')
+  const [paymentChannel, setPaymentChannel] = useState<PaymentChannel>('GCASH')
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -33,6 +41,7 @@ export function NomineesForm({ plans }: { plans: Plan[] }) {
           nomineeEmail: form.email,
           nomineePhone: form.phone,
           nomineeAddress: form.address,
+          paymentChannel,
         }),
       })
       if (!res.ok) {
@@ -40,9 +49,9 @@ export function NomineesForm({ plans }: { plans: Plan[] }) {
         setError(data.error ?? 'Something went wrong. Please try again.')
         return
       }
-      const { checkoutUrl } = await res.json()
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl
+      const { authUrl } = await res.json()
+      if (authUrl) {
+        window.location.href = authUrl
       } else {
         setError('Could not get payment URL. Please try again.')
       }
@@ -128,6 +137,31 @@ export function NomineesForm({ plans }: { plans: Plan[] }) {
         <div>
           <Label htmlFor="address" className="text-sm font-medium text-[var(--sea-ink)]">Address</Label>
           <Input id="address" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} placeholder="123 Main St, Quezon City" className="mt-1" />
+        </div>
+
+        {/* Payment method */}
+        <div>
+          <p className="text-sm font-medium text-[var(--sea-ink)] mb-2">Payment Method</p>
+          <div className="flex gap-2">
+            {PAYMENT_CHANNELS.map(ch => (
+              <button
+                key={ch.value}
+                type="button"
+                onClick={() => setPaymentChannel(ch.value)}
+                className={`flex-1 flex items-center justify-center gap-2 rounded-xl border-2 py-2.5 text-sm font-medium transition-all ${
+                  paymentChannel === ch.value
+                    ? 'border-[var(--lagoon-deep)] bg-[rgba(79,184,178,0.08)] text-[var(--lagoon-deep)]'
+                    : 'border-[rgba(23,58,64,0.1)] text-[var(--sea-ink-soft)] hover:border-[rgba(79,184,178,0.4)]'
+                }`}
+              >
+                <span>{ch.icon}</span>
+                {ch.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-[var(--sea-ink-soft)] mt-1.5">
+            You&apos;ll be redirected to authorize your {PAYMENT_CHANNELS.find(c => c.value === paymentChannel)?.label} for auto-debit.
+          </p>
         </div>
 
         {error && (

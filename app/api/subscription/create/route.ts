@@ -2,7 +2,10 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/db'
 import { env } from '@/env'
-import { createXenditRecurringPlan, getCheckoutUrl } from '@/lib/xendit-recurring'
+import {
+  createXenditCustomer,
+  createXenditPaymentMethod,
+} from '@/lib/xendit-recurring'
 
 const BodySchema = z.object({
   planId: z.string().min(1),
@@ -10,6 +13,7 @@ const BodySchema = z.object({
   nomineeEmail: z.string().email(),
   nomineePhone: z.string().min(1),
   nomineeAddress: z.string().optional(),
+  paymentChannel: z.enum(['GCASH', 'PAYMAYA']).default('GCASH'),
 })
 
 export async function POST(request: NextRequest) {
@@ -28,20 +32,24 @@ export async function POST(request: NextRequest) {
   const subscriptionId = crypto.randomUUID()
   const baseUrl = env.SERVER_URL ?? new URL(request.url).origin
 
-  const xenditPlan = await createXenditRecurringPlan({
-    referenceId: subscriptionId,
-    amount: plan.amount,
-    intervalCount: plan.intervalCount,
-    description: `${plan.name} — ₱${plan.amount}/month`,
-    customerName: body.nomineeName,
-    customerEmail: body.nomineeEmail,
-    customerPhone: body.nomineePhone,
-    successReturnUrl: `${baseUrl}/nominees/success?subscriptionId=${subscriptionId}`,
-    failureReturnUrl: `${baseUrl}/nominees/failed?subscriptionId=${subscriptionId}`,
+  // Step 1: Create Xendit customer
+  const customer = await createXenditCustomer({
+    referenceId: `cust_${subscriptionId}`,
+    givenNames: body.nomineeName,
+    email: body.nomineeEmail,
+    mobileNumber: body.nomineePhone,
   })
 
-  const checkoutUrl = getCheckoutUrl(xenditPlan)
+  // Step 2: Create payment method — returns auth URL for user to authorize their e-wallet
+  const pm = await createXenditPaymentMethod({
+    customerId: customer.id,
+    channelCode: body.paymentChannel,
+    successReturnUrl: `${baseUrl}/nominees/success?subscriptionId=${subscriptionId}`,
+    failureReturnUrl: `${baseUrl}/nominees/failed?subscriptionId=${subscriptionId}`,
+    cancelReturnUrl: `${baseUrl}/nominees?cancelled=1`,
+  })
 
+  // Save subscription before redirect so webhook can find it by payment method ID
   await prisma.subscription.create({
     data: {
       id: subscriptionId,
@@ -50,11 +58,13 @@ export async function POST(request: NextRequest) {
       nomineeEmail: body.nomineeEmail,
       nomineePhone: body.nomineePhone,
       nomineeAddress: body.nomineeAddress,
-      xenditSubscriptionId: xenditPlan.id,
-      checkoutUrl,
+      paymentChannel: body.paymentChannel,
+      xenditCustomerId: customer.id,
+      xenditPaymentMethodId: pm.id,
+      authUrl: pm.authUrl,
       status: 'pending',
     },
   })
 
-  return Response.json({ checkoutUrl, subscriptionId })
+  return Response.json({ authUrl: pm.authUrl, subscriptionId })
 }

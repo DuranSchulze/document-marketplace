@@ -31,8 +31,11 @@ export type SubscriptionMinAggregateOutputType = {
   nomineeEmail: string | null
   nomineePhone: string | null
   nomineeAddress: string | null
+  paymentChannel: string | null
+  xenditCustomerId: string | null
+  xenditPaymentMethodId: string | null
   xenditSubscriptionId: string | null
-  checkoutUrl: string | null
+  authUrl: string | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -46,8 +49,11 @@ export type SubscriptionMaxAggregateOutputType = {
   nomineeEmail: string | null
   nomineePhone: string | null
   nomineeAddress: string | null
+  paymentChannel: string | null
+  xenditCustomerId: string | null
+  xenditPaymentMethodId: string | null
   xenditSubscriptionId: string | null
-  checkoutUrl: string | null
+  authUrl: string | null
   status: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,8 +67,11 @@ export type SubscriptionCountAggregateOutputType = {
   nomineeEmail: number
   nomineePhone: number
   nomineeAddress: number
+  paymentChannel: number
+  xenditCustomerId: number
+  xenditPaymentMethodId: number
   xenditSubscriptionId: number
-  checkoutUrl: number
+  authUrl: number
   status: number
   createdAt: number
   updatedAt: number
@@ -78,8 +87,11 @@ export type SubscriptionMinAggregateInputType = {
   nomineeEmail?: true
   nomineePhone?: true
   nomineeAddress?: true
+  paymentChannel?: true
+  xenditCustomerId?: true
+  xenditPaymentMethodId?: true
   xenditSubscriptionId?: true
-  checkoutUrl?: true
+  authUrl?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -93,8 +105,11 @@ export type SubscriptionMaxAggregateInputType = {
   nomineeEmail?: true
   nomineePhone?: true
   nomineeAddress?: true
+  paymentChannel?: true
+  xenditCustomerId?: true
+  xenditPaymentMethodId?: true
   xenditSubscriptionId?: true
-  checkoutUrl?: true
+  authUrl?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -108,8 +123,11 @@ export type SubscriptionCountAggregateInputType = {
   nomineeEmail?: true
   nomineePhone?: true
   nomineeAddress?: true
+  paymentChannel?: true
+  xenditCustomerId?: true
+  xenditPaymentMethodId?: true
   xenditSubscriptionId?: true
-  checkoutUrl?: true
+  authUrl?: true
   status?: true
   createdAt?: true
   updatedAt?: true
@@ -196,8 +214,11 @@ export type SubscriptionGroupByOutputType = {
   nomineeEmail: string
   nomineePhone: string
   nomineeAddress: string | null
+  paymentChannel: string | null
+  xenditCustomerId: string | null
+  xenditPaymentMethodId: string | null
   xenditSubscriptionId: string | null
-  checkoutUrl: string | null
+  authUrl: string | null
   status: string
   createdAt: Date
   updatedAt: Date
@@ -232,8 +253,11 @@ export type SubscriptionWhereInput = {
   nomineeEmail?: Prisma.StringFilter<"Subscription"> | string
   nomineePhone?: Prisma.StringFilter<"Subscription"> | string
   nomineeAddress?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  paymentChannel?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentMethodId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditSubscriptionId?: Prisma.StringNullableFilter<"Subscription"> | string | null
-  checkoutUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  authUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
   status?: Prisma.StringFilter<"Subscription"> | string
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
@@ -248,8 +272,11 @@ export type SubscriptionOrderByWithRelationInput = {
   nomineeEmail?: Prisma.SortOrder
   nomineePhone?: Prisma.SortOrder
   nomineeAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentChannel?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  checkoutUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  authUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -259,6 +286,7 @@ export type SubscriptionOrderByWithRelationInput = {
 
 export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  xenditPaymentMethodId?: string
   xenditSubscriptionId?: string
   AND?: Prisma.SubscriptionWhereInput | Prisma.SubscriptionWhereInput[]
   OR?: Prisma.SubscriptionWhereInput[]
@@ -268,13 +296,15 @@ export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
   nomineeEmail?: Prisma.StringFilter<"Subscription"> | string
   nomineePhone?: Prisma.StringFilter<"Subscription"> | string
   nomineeAddress?: Prisma.StringNullableFilter<"Subscription"> | string | null
-  checkoutUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  paymentChannel?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  authUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
   status?: Prisma.StringFilter<"Subscription"> | string
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   activatedAt?: Prisma.DateTimeNullableFilter<"Subscription"> | Date | string | null
   plan?: Prisma.XOR<Prisma.SubscriptionPlanScalarRelationFilter, Prisma.SubscriptionPlanWhereInput>
-}, "id" | "xenditSubscriptionId">
+}, "id" | "xenditPaymentMethodId" | "xenditSubscriptionId">
 
 export type SubscriptionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -283,8 +313,11 @@ export type SubscriptionOrderByWithAggregationInput = {
   nomineeEmail?: Prisma.SortOrder
   nomineePhone?: Prisma.SortOrder
   nomineeAddress?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentChannel?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
-  checkoutUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  authUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -304,8 +337,11 @@ export type SubscriptionScalarWhereWithAggregatesInput = {
   nomineeEmail?: Prisma.StringWithAggregatesFilter<"Subscription"> | string
   nomineePhone?: Prisma.StringWithAggregatesFilter<"Subscription"> | string
   nomineeAddress?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  paymentChannel?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  xenditCustomerId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  xenditPaymentMethodId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   xenditSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
-  checkoutUrl?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  authUrl?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Subscription"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Subscription"> | Date | string
@@ -318,8 +354,11 @@ export type SubscriptionCreateInput = {
   nomineeEmail: string
   nomineePhone: string
   nomineeAddress?: string | null
+  paymentChannel?: string | null
+  xenditCustomerId?: string | null
+  xenditPaymentMethodId?: string | null
   xenditSubscriptionId?: string | null
-  checkoutUrl?: string | null
+  authUrl?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -334,8 +373,11 @@ export type SubscriptionUncheckedCreateInput = {
   nomineeEmail: string
   nomineePhone: string
   nomineeAddress?: string | null
+  paymentChannel?: string | null
+  xenditCustomerId?: string | null
+  xenditPaymentMethodId?: string | null
   xenditSubscriptionId?: string | null
-  checkoutUrl?: string | null
+  authUrl?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -348,8 +390,11 @@ export type SubscriptionUpdateInput = {
   nomineeEmail?: Prisma.StringFieldUpdateOperationsInput | string
   nomineePhone?: Prisma.StringFieldUpdateOperationsInput | string
   nomineeAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  checkoutUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -364,8 +409,11 @@ export type SubscriptionUncheckedUpdateInput = {
   nomineeEmail?: Prisma.StringFieldUpdateOperationsInput | string
   nomineePhone?: Prisma.StringFieldUpdateOperationsInput | string
   nomineeAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  checkoutUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -379,8 +427,11 @@ export type SubscriptionCreateManyInput = {
   nomineeEmail: string
   nomineePhone: string
   nomineeAddress?: string | null
+  paymentChannel?: string | null
+  xenditCustomerId?: string | null
+  xenditPaymentMethodId?: string | null
   xenditSubscriptionId?: string | null
-  checkoutUrl?: string | null
+  authUrl?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -393,8 +444,11 @@ export type SubscriptionUpdateManyMutationInput = {
   nomineeEmail?: Prisma.StringFieldUpdateOperationsInput | string
   nomineePhone?: Prisma.StringFieldUpdateOperationsInput | string
   nomineeAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  checkoutUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -408,8 +462,11 @@ export type SubscriptionUncheckedUpdateManyInput = {
   nomineeEmail?: Prisma.StringFieldUpdateOperationsInput | string
   nomineePhone?: Prisma.StringFieldUpdateOperationsInput | string
   nomineeAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  checkoutUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -433,8 +490,11 @@ export type SubscriptionCountOrderByAggregateInput = {
   nomineeEmail?: Prisma.SortOrder
   nomineePhone?: Prisma.SortOrder
   nomineeAddress?: Prisma.SortOrder
+  paymentChannel?: Prisma.SortOrder
+  xenditCustomerId?: Prisma.SortOrder
+  xenditPaymentMethodId?: Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrder
-  checkoutUrl?: Prisma.SortOrder
+  authUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -448,8 +508,11 @@ export type SubscriptionMaxOrderByAggregateInput = {
   nomineeEmail?: Prisma.SortOrder
   nomineePhone?: Prisma.SortOrder
   nomineeAddress?: Prisma.SortOrder
+  paymentChannel?: Prisma.SortOrder
+  xenditCustomerId?: Prisma.SortOrder
+  xenditPaymentMethodId?: Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrder
-  checkoutUrl?: Prisma.SortOrder
+  authUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -463,8 +526,11 @@ export type SubscriptionMinOrderByAggregateInput = {
   nomineeEmail?: Prisma.SortOrder
   nomineePhone?: Prisma.SortOrder
   nomineeAddress?: Prisma.SortOrder
+  paymentChannel?: Prisma.SortOrder
+  xenditCustomerId?: Prisma.SortOrder
+  xenditPaymentMethodId?: Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrder
-  checkoutUrl?: Prisma.SortOrder
+  authUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -519,8 +585,11 @@ export type SubscriptionCreateWithoutPlanInput = {
   nomineeEmail: string
   nomineePhone: string
   nomineeAddress?: string | null
+  paymentChannel?: string | null
+  xenditCustomerId?: string | null
+  xenditPaymentMethodId?: string | null
   xenditSubscriptionId?: string | null
-  checkoutUrl?: string | null
+  authUrl?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -533,8 +602,11 @@ export type SubscriptionUncheckedCreateWithoutPlanInput = {
   nomineeEmail: string
   nomineePhone: string
   nomineeAddress?: string | null
+  paymentChannel?: string | null
+  xenditCustomerId?: string | null
+  xenditPaymentMethodId?: string | null
   xenditSubscriptionId?: string | null
-  checkoutUrl?: string | null
+  authUrl?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -577,8 +649,11 @@ export type SubscriptionScalarWhereInput = {
   nomineeEmail?: Prisma.StringFilter<"Subscription"> | string
   nomineePhone?: Prisma.StringFilter<"Subscription"> | string
   nomineeAddress?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  paymentChannel?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentMethodId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditSubscriptionId?: Prisma.StringNullableFilter<"Subscription"> | string | null
-  checkoutUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  authUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
   status?: Prisma.StringFilter<"Subscription"> | string
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
@@ -591,8 +666,11 @@ export type SubscriptionCreateManyPlanInput = {
   nomineeEmail: string
   nomineePhone: string
   nomineeAddress?: string | null
+  paymentChannel?: string | null
+  xenditCustomerId?: string | null
+  xenditPaymentMethodId?: string | null
   xenditSubscriptionId?: string | null
-  checkoutUrl?: string | null
+  authUrl?: string | null
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -605,8 +683,11 @@ export type SubscriptionUpdateWithoutPlanInput = {
   nomineeEmail?: Prisma.StringFieldUpdateOperationsInput | string
   nomineePhone?: Prisma.StringFieldUpdateOperationsInput | string
   nomineeAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  checkoutUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -619,8 +700,11 @@ export type SubscriptionUncheckedUpdateWithoutPlanInput = {
   nomineeEmail?: Prisma.StringFieldUpdateOperationsInput | string
   nomineePhone?: Prisma.StringFieldUpdateOperationsInput | string
   nomineeAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  checkoutUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -633,8 +717,11 @@ export type SubscriptionUncheckedUpdateManyWithoutPlanInput = {
   nomineeEmail?: Prisma.StringFieldUpdateOperationsInput | string
   nomineePhone?: Prisma.StringFieldUpdateOperationsInput | string
   nomineeAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  checkoutUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -650,8 +737,11 @@ export type SubscriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   nomineeEmail?: boolean
   nomineePhone?: boolean
   nomineeAddress?: boolean
+  paymentChannel?: boolean
+  xenditCustomerId?: boolean
+  xenditPaymentMethodId?: boolean
   xenditSubscriptionId?: boolean
-  checkoutUrl?: boolean
+  authUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -666,8 +756,11 @@ export type SubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   nomineeEmail?: boolean
   nomineePhone?: boolean
   nomineeAddress?: boolean
+  paymentChannel?: boolean
+  xenditCustomerId?: boolean
+  xenditPaymentMethodId?: boolean
   xenditSubscriptionId?: boolean
-  checkoutUrl?: boolean
+  authUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -682,8 +775,11 @@ export type SubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   nomineeEmail?: boolean
   nomineePhone?: boolean
   nomineeAddress?: boolean
+  paymentChannel?: boolean
+  xenditCustomerId?: boolean
+  xenditPaymentMethodId?: boolean
   xenditSubscriptionId?: boolean
-  checkoutUrl?: boolean
+  authUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -698,15 +794,18 @@ export type SubscriptionSelectScalar = {
   nomineeEmail?: boolean
   nomineePhone?: boolean
   nomineeAddress?: boolean
+  paymentChannel?: boolean
+  xenditCustomerId?: boolean
+  xenditPaymentMethodId?: boolean
   xenditSubscriptionId?: boolean
-  checkoutUrl?: boolean
+  authUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   activatedAt?: boolean
 }
 
-export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "planId" | "nomineeName" | "nomineeEmail" | "nomineePhone" | "nomineeAddress" | "xenditSubscriptionId" | "checkoutUrl" | "status" | "createdAt" | "updatedAt" | "activatedAt", ExtArgs["result"]["subscription"]>
+export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "planId" | "nomineeName" | "nomineeEmail" | "nomineePhone" | "nomineeAddress" | "paymentChannel" | "xenditCustomerId" | "xenditPaymentMethodId" | "xenditSubscriptionId" | "authUrl" | "status" | "createdAt" | "updatedAt" | "activatedAt", ExtArgs["result"]["subscription"]>
 export type SubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   plan?: boolean | Prisma.SubscriptionPlanDefaultArgs<ExtArgs>
 }
@@ -729,8 +828,11 @@ export type $SubscriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     nomineeEmail: string
     nomineePhone: string
     nomineeAddress: string | null
+    paymentChannel: string | null
+    xenditCustomerId: string | null
+    xenditPaymentMethodId: string | null
     xenditSubscriptionId: string | null
-    checkoutUrl: string | null
+    authUrl: string | null
     status: string
     createdAt: Date
     updatedAt: Date
@@ -1165,8 +1267,11 @@ export interface SubscriptionFieldRefs {
   readonly nomineeEmail: Prisma.FieldRef<"Subscription", 'String'>
   readonly nomineePhone: Prisma.FieldRef<"Subscription", 'String'>
   readonly nomineeAddress: Prisma.FieldRef<"Subscription", 'String'>
+  readonly paymentChannel: Prisma.FieldRef<"Subscription", 'String'>
+  readonly xenditCustomerId: Prisma.FieldRef<"Subscription", 'String'>
+  readonly xenditPaymentMethodId: Prisma.FieldRef<"Subscription", 'String'>
   readonly xenditSubscriptionId: Prisma.FieldRef<"Subscription", 'String'>
-  readonly checkoutUrl: Prisma.FieldRef<"Subscription", 'String'>
+  readonly authUrl: Prisma.FieldRef<"Subscription", 'String'>
   readonly status: Prisma.FieldRef<"Subscription", 'String'>
   readonly createdAt: Prisma.FieldRef<"Subscription", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Subscription", 'DateTime'>
