@@ -1,8 +1,6 @@
 import { type NextRequest } from 'next/server'
-import { generateDownloadToken } from '@/lib/download-token'
 import { verifyXenditWebhookToken } from '@/lib/xendit'
-import { appendCustomerRecord } from '@/lib/sheets'
-import { sendDownloadEmail } from '@/lib/mailer'
+import { finalizePaidOrder } from '@/lib/order-finalize'
 import { prisma } from '@/db'
 import { env } from '@/env'
 
@@ -34,7 +32,7 @@ export async function POST(request: NextRequest) {
   if (status === 'PAID') {
     const order = await prisma.order.findFirst({
       where: { xenditInvoiceId },
-      include: { document: true },
+      select: { id: true },
     })
     if (!order) {
       console.error('[payment-webhook] Order not found for paid invoice', {
@@ -43,93 +41,23 @@ export async function POST(request: NextRequest) {
       })
       return new Response('Order not found', { status: 404 })
     }
-    if (order.status === 'paid') {
-      console.info('[payment-webhook] Duplicate paid webhook ignored', {
-        orderId: order.id,
-        xenditInvoiceId,
-      })
-      return new Response('OK', { status: 200 })
-    }
 
-    console.info('[payment-webhook] Marking order as paid', {
-      orderId: order.id,
-      buyerEmail: order.buyerEmail,
-      documentId: order.documentId,
-      documentTitle: order.documentTitle,
-      amount: order.amount,
-      xenditInvoiceId,
-      xenditExternalId,
-    })
-
-    const driveFileUrl = order.document.driveFileUrl
     const baseUrl = env.SERVER_URL ?? new URL(request.url).origin
-
-    const token = generateDownloadToken({
-      orderId: order.id,
-      documentId: order.documentId,
-      driveFileUrl,
-      buyerEmail: order.buyerEmail,
-    })
-
-    const downloadUrl = `${baseUrl}/api/download/${token}`
-    const paidAt = new Date()
-
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { status: 'paid', downloadToken: token, downloadUrl, paidAt },
-    })
-
-    console.info('[payment-webhook] Order updated successfully', {
-      orderId: order.id,
-      paidAt: paidAt.toISOString(),
-      downloadUrl,
-    })
-
     try {
-      await appendCustomerRecord({
+      await finalizePaidOrder({
         orderId: order.id,
-        documentTitle: order.documentTitle,
-        buyerName: order.buyerName,
-        buyerEmail: order.buyerEmail,
-        buyerPhone: order.buyerPhone,
-        buyerAddress: order.buyerAddress ?? '',
-        amount: order.amount,
-        purchasedAt: paidAt.toISOString(),
+        baseUrl,
         xenditInvoiceId,
-        xenditInvoiceUrl: order.xenditPaymentUrl ?? '',
         xenditExternalId,
-      })
-
-      console.info('[payment-webhook] Customer record appended to Google Sheets', {
-        orderId: order.id,
-        xenditInvoiceId,
+        source: 'webhook',
       })
     } catch (error) {
-      console.error('[payment-webhook] Failed to append customer record to Google Sheets', {
+      console.error('[payment-webhook] finalizePaidOrder failed', {
         orderId: order.id,
         xenditInvoiceId,
         error,
       })
-    }
-
-    try {
-      await sendDownloadEmail({
-        to: order.buyerEmail,
-        name: order.buyerName,
-        documentTitle: order.documentTitle,
-        downloadUrl,
-      })
-
-      console.info('[payment-webhook] Download email flow completed', {
-        orderId: order.id,
-        buyerEmail: order.buyerEmail,
-      })
-    } catch (error) {
-      console.error('[payment-webhook] Download email flow failed', {
-        orderId: order.id,
-        buyerEmail: order.buyerEmail,
-        error,
-      })
+      return new Response('Internal error', { status: 500 })
     }
   } else if (status === 'EXPIRED' || status === 'FAILED') {
     await prisma.order.updateMany({

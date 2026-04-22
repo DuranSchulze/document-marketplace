@@ -4,10 +4,31 @@ import { env } from "@/env";
 import { getGoogleDriveDownloadUrl } from "@/lib/google-drive";
 
 function parsePrivateKey(raw: string): string {
-  if (!raw.includes("-----BEGIN")) {
-    return Buffer.from(raw, "base64").toString("utf-8").trim();
+  // Strip surrounding quotes — `.env` parsers usually handle this, but Vercel
+  // sometimes preserves them when the value is pasted manually.
+  let key = raw.trim().replace(/^['"]|['"]$/g, "");
+
+  // If this doesn't already look like a PEM, assume it's base64-encoded and
+  // decode it first. (Common Vercel-friendly storage format because the raw
+  // PEM has newlines that the dashboard mangles.)
+  if (!key.includes("-----BEGIN")) {
+    key = Buffer.from(key, "base64").toString("utf-8");
   }
-  return raw.replace(/\\n/g, "\n").trim();
+
+  // Always normalize escaped newlines to real ones — applies whether the key
+  // came in as raw PEM with literal `\n` or as a base64-decoded JSON-escaped
+  // string. Without this, OpenSSL throws `error:1E08010C:DECODER unsupported`
+  // because the BEGIN/END lines aren't on their own lines.
+  key = key.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").trim();
+
+  if (!key.includes("-----BEGIN") || !key.includes("-----END")) {
+    throw new Error(
+      "Parsed GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY does not look like a PEM. " +
+        "Expected either a raw PEM (with literal newlines or escaped \\n) or a base64-encoded PEM."
+    );
+  }
+
+  return key;
 }
 
 function getDriveClient() {
@@ -92,6 +113,80 @@ async function getOrCreateCategoryFolder(
   });
 
   return created.data.id!;
+}
+
+/**
+ * Resolve a Drive file's thumbnail URL via the service account, fetch it,
+ * and return the bytes. The public `drive.google.com/thumbnail?id=…` endpoint
+ * only works when the file is shared as anyone-can-read AND Drive has had
+ * time to render a thumbnail; for service-account-only files it 404s. Going
+ * through the API ensures we always have access.
+ *
+ * Returns null when Drive hasn't generated a thumbnail yet (common right
+ * after upload — caller should fall back to a placeholder).
+ */
+export async function fetchDriveThumbnail(
+  fileId: string,
+  size = 1600,
+): Promise<{ bytes: ArrayBuffer; contentType: string } | null> {
+  const drive = getDriveClient()
+  const meta = await drive.files.get({
+    fileId,
+    fields: 'id, thumbnailLink',
+    supportsAllDrives: true,
+  })
+  const link = meta.data.thumbnailLink
+  if (!link) return null
+
+  // Drive's thumbnailLink includes a `=sNNN` size suffix (e.g. =s220). Swap
+  // it for our requested width so the image isn't tiny when zoomed.
+  const sized = link.replace(/=s\d+$/, `=s${size}`)
+
+  // The thumbnailLink is itself a signed URL — no Authorization header needed.
+  const res = await fetch(sized)
+  if (!res.ok) return null
+
+  return {
+    bytes: await res.arrayBuffer(),
+    contentType: res.headers.get('content-type') ?? 'image/jpeg',
+  }
+}
+
+/**
+ * Fetch a Drive file's bytes via the service account. Returns a Web ReadableStream
+ * suitable for handing back to a Next.js Response, so we can serve the file with
+ * `Content-Disposition: attachment` and force the browser to save it (instead of
+ * 302-redirecting to Drive's viewer, which renders inline).
+ */
+export async function streamDriveFile(fileId: string): Promise<{
+  stream: ReadableStream<Uint8Array>
+  fileName: string
+  mimeType: string
+  size?: number
+}> {
+  const drive = getDriveClient()
+
+  const meta = await drive.files.get({
+    fileId,
+    fields: 'id, name, mimeType, size',
+    supportsAllDrives: true,
+  })
+
+  const fileName = meta.data.name ?? `download-${fileId}`
+  const mimeType = meta.data.mimeType ?? 'application/octet-stream'
+  const size = meta.data.size ? Number(meta.data.size) : undefined
+
+  const res = await drive.files.get(
+    { fileId, alt: 'media', supportsAllDrives: true },
+    { responseType: 'stream' },
+  )
+
+  // googleapis returns a Node Readable; convert to a Web ReadableStream for
+  // Response. Node 18+ provides Readable.toWeb.
+  const nodeStream = res.data as Readable
+  const stream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>
+
+  return { stream, fileName, mimeType, size }
 }
 
 export async function uploadFileToDrive(

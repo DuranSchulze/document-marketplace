@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 const CATEGORIES = [
   "Legal",
@@ -106,16 +106,14 @@ export function DocumentForm({
         >
           Description
         </Label>
-        <Textarea
-          id="description"
-          value={form.description}
-          onChange={(e) =>
-            setForm((current) => ({ ...current, description: e.target.value }))
-          }
-          placeholder="Describe what this document contains and who it's for…"
-          rows={4}
-          className="mt-1"
-        />
+        <div className="mt-1">
+          <RichTextEditor
+            value={form.description}
+            onChange={(html) =>
+              setForm((current) => ({ ...current, description: html }))
+            }
+          />
+        </div>
         {errors.description && (
           <p className="text-red-500 text-xs mt-1">{errors.description}</p>
         )}

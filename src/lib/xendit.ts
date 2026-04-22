@@ -21,6 +21,10 @@ export interface CreateInvoiceParams {
   description: string
   successRedirectUrl: string
   failureRedirectUrl: string
+  // Optional buyer profile — when provided, Xendit can send the buyer its
+  // own branded receipt email on `invoice.paid` in addition to our SMTP one.
+  customerName?: string
+  customerPhone?: string
 }
 
 export interface XenditInvoice {
@@ -42,6 +46,21 @@ export async function createXenditInvoice(params: CreateInvoiceParams): Promise<
       success_redirect_url: params.successRedirectUrl,
       failure_redirect_url: params.failureRedirectUrl,
       currency: 'PHP',
+      // Belt-and-suspenders email delivery: Xendit will send a branded
+      // payment receipt directly to the buyer when the invoice transitions
+      // to PAID, in addition to the download-link email we send via SMTP.
+      // `customer` is required for notifications to fire.
+      customer: {
+        given_names: params.customerName ?? params.payerEmail,
+        email: params.payerEmail,
+        ...(params.customerPhone ? { mobile_number: params.customerPhone } : {}),
+      },
+      customer_notification_preference: {
+        invoice_created: ['email'],
+        invoice_reminder: ['email'],
+        invoice_paid: ['email'],
+        invoice_expired: ['email'],
+      },
     }),
   })
 
@@ -55,4 +74,13 @@ export async function createXenditInvoice(params: CreateInvoiceParams): Promise<
 
 export function verifyXenditWebhookToken(token: string): boolean {
   return !!env.XENDIT_WEBHOOK_TOKEN && token === env.XENDIT_WEBHOOK_TOKEN
+}
+
+export async function getXenditInvoice(invoiceId: string): Promise<XenditInvoice> {
+  const res = await xenditFetch(`/v2/invoices/${invoiceId}`)
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Xendit error ${res.status}: ${text}`)
+  }
+  return res.json() as Promise<XenditInvoice>
 }

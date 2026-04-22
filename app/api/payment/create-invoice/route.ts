@@ -27,6 +27,8 @@ export async function POST(request: NextRequest) {
     externalId: orderId,
     amount: document.price,
     payerEmail: body.email,
+    customerName: body.name,
+    customerPhone: body.phone,
     description: `Purchase: ${document.title}`,
     successRedirectUrl: `${baseUrl}/payment/success?orderId=${orderId}`,
     failureRedirectUrl: `${baseUrl}/payment/failed?orderId=${orderId}&documentId=${document.id}`,
