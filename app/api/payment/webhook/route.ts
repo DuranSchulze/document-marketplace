@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     return new Response('Invalid JSON', { status: 400 })
   }
 
-  const { status, id: xenditInvoiceId } = payload
+  const { status, id: xenditInvoiceId, external_id: xenditExternalId } = payload
 
   if (status === 'PAID') {
     const order = await prisma.order.findFirst({
@@ -58,6 +58,9 @@ export async function POST(request: NextRequest) {
       buyerAddress: order.buyerAddress ?? '',
       amount: order.amount,
       purchasedAt: paidAt.toISOString(),
+      xenditInvoiceId,
+      xenditInvoiceUrl: order.xenditPaymentUrl ?? '',
+      xenditExternalId,
     })
 
     await sendDownloadEmail({

@@ -80,6 +80,9 @@ export async function POST(request: NextRequest) {
     status: 'pending',
     event: 'created',
     recordedAt: new Date().toISOString(),
+    xenditCustomerId: customer.id,
+    xenditPaymentMethodId: pm.id,
+    xenditSubscriptionId: '',
   })
 
   return Response.json({ authUrl: pm.authUrl, subscriptionId })

@@ -23,6 +23,9 @@ async function logSubscriptionEvent(subscriptionId: string, status: string, even
     status,
     event,
     recordedAt: new Date().toISOString(),
+    xenditCustomerId: sub.xenditCustomerId ?? '',
+    xenditPaymentMethodId: sub.xenditPaymentMethodId ?? '',
+    xenditSubscriptionId: sub.xenditSubscriptionId ?? '',
   })
 }
 
