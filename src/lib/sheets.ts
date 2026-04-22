@@ -2,12 +2,31 @@ import { google } from 'googleapis'
 import { env } from '@/env'
 
 function parsePrivateKey(raw: string): string {
-  // If stored as base64 (no PEM header), decode it first
-  if (!raw.includes('-----BEGIN')) {
-    return Buffer.from(raw, 'base64').toString('utf-8').trim()
+  // Strip surrounding quotes if the env value was pasted with them.
+  let key = raw.trim().replace(/^['"]|['"]$/g, '')
+
+  // If it doesn't already look like a PEM, assume it's base64-encoded and
+  // decode it first. (Vercel-friendly storage format because raw PEM has
+  // newlines the dashboard sometimes mangles.)
+  if (!key.includes('-----BEGIN')) {
+    key = Buffer.from(key, 'base64').toString('utf-8')
   }
-  // Otherwise handle literal \n from Vercel env var storage
-  return raw.replace(/\\n/g, '\n').trim()
+
+  // Always normalize escaped newlines to real ones — applies whether the key
+  // came in as raw PEM with literal `\n` or as a base64-decoded
+  // JSON-escaped string. Without this, OpenSSL throws
+  // `error:1E08010C:DECODER unsupported` because BEGIN/END aren't on their
+  // own lines.
+  key = key.replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').trim()
+
+  if (!key.includes('-----BEGIN') || !key.includes('-----END')) {
+    throw new Error(
+      'Parsed GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY does not look like a PEM. ' +
+        'Expected either a raw PEM (with literal newlines or escaped \\n) or a base64-encoded PEM.',
+    )
+  }
+
+  return key
 }
 
 function getSheetsClient() {
