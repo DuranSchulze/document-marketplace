@@ -1,14 +1,20 @@
-import { prisma } from '@/db'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import { NomineesForm } from './NomineesForm'
+import { prisma } from "@/db";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { NomineesForm } from "./NomineesForm";
 
 export default async function NomineesPage() {
   const plans = await prisma.subscriptionPlan.findMany({
     where: { isActive: true },
-    orderBy: { amount: 'asc' },
-    select: { id: true, name: true, description: true, amount: true, intervalCount: true },
-  })
+    orderBy: { amount: "asc" },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      amount: true,
+      intervalCount: true,
+    },
+  });
 
   return (
     <>
@@ -17,9 +23,13 @@ export default async function NomineesPage() {
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
             <p className="island-kicker mb-2">Subscription</p>
-            <h1 className="text-3xl font-bold text-[var(--sea-ink)] mb-2">Nominee Registration</h1>
+            <h1 className="text-3xl font-bold text-[var(--sea-ink)] mb-2">
+              Nominee Registration
+            </h1>
             <p className="text-[var(--sea-ink-soft)]">
-              Fill in your details and choose a subscription plan. You'll be redirected to complete your payment setup.
+              Fill in your details, choose a subscription plan, and select an
+              available payment channel. GCash is not yet available, but you can
+              continue with the currently supported options below.
             </p>
           </div>
           <NomineesForm plans={plans} />
@@ -27,5 +37,5 @@ export default async function NomineesPage() {
       </main>
       <Footer />
     </>
-  )
+  );
 }

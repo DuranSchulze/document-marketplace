@@ -14,7 +14,7 @@ const BodySchema = z.object({
   nomineeEmail: z.string().email(),
   nomineePhone: z.string().min(1),
   nomineeAddress: z.string().optional(),
-  paymentChannel: z.enum(['GCASH', 'PAYMAYA']).default('GCASH'),
+  paymentChannel: z.enum(['GCASH', 'PAYMAYA']).default('PAYMAYA'),
 })
 
 export async function POST(request: NextRequest) {
@@ -28,6 +28,13 @@ export async function POST(request: NextRequest) {
   const plan = await prisma.subscriptionPlan.findUnique({ where: { id: body.planId } })
   if (!plan || !plan.isActive) {
     return Response.json({ error: 'Plan not found' }, { status: 404 })
+  }
+
+  if (body.paymentChannel === 'GCASH') {
+    return Response.json(
+      { error: 'GCash is not yet available. Please use Maya for now.' },
+      { status: 400 },
+    )
   }
 
   const subscriptionId = crypto.randomUUID()

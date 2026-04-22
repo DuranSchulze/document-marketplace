@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import ThemeToggle from './ThemeToggle'
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)] px-4 backdrop-blur-lg">
@@ -25,13 +25,13 @@ export default function Header() {
         <div className="order-3 flex w-full flex-wrap items-center gap-x-4 gap-y-1 pb-1 text-sm font-semibold sm:order-2 sm:w-auto sm:flex-nowrap sm:pb-0">
           <Link
             href="/"
-            className={`nav-link${pathname === '/' ? ' is-active' : ''}`}
+            className={`nav-link${pathname === "/" ? " is-active" : ""}`}
           >
             Browse
           </Link>
           <Link
             href="/nominees"
-            className={`nav-link${pathname === '/nominees' ? ' is-active' : ''}`}
+            className={`nav-link${pathname === "/nominees" ? " is-active" : ""}`}
           >
             Nominees
           </Link>
@@ -39,15 +39,9 @@ export default function Header() {
 
         {/* Right side actions */}
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-          <Link
-            href="/admin/login"
-            className="rounded-xl px-3 py-1.5 text-sm font-medium text-[var(--sea-ink-soft)] transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]"
-          >
-            Admin
-          </Link>
           <ThemeToggle />
         </div>
       </nav>
     </header>
-  )
+  );
 }

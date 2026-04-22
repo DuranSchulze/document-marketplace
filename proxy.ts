@@ -14,7 +14,7 @@ const SECURITY_HEADERS: Record<string, string> = {
   'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const response = NextResponse.next()
 
@@ -25,9 +25,14 @@ export function middleware(request: NextRequest) {
   // can't talk to the DB cheaply, so this just avoids a server roundtrip on
   // obviously-unauthenticated requests.
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    const sessionCookie =
-      request.cookies.get('docmarket.session_token') ??
-      request.cookies.get('docmarket.session_token_http_only')
+    // In production Better Auth uses `useSecureCookies`, which prefixes the
+    // cookie name with `__Secure-`. Match that here or the presence check
+    // will never find the cookie and send users back to login.
+    const cookieName =
+      process.env.NODE_ENV === 'production'
+        ? '__Secure-docmarket.session_token'
+        : 'docmarket.session_token'
+    const sessionCookie = request.cookies.get(cookieName)
 
     if (!sessionCookie) {
       const loginUrl = new URL('/admin/login', request.url)
