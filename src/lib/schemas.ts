@@ -1,5 +1,35 @@
 import { z } from 'zod'
 
+const DocumentFileFieldsSchema = z.object({
+  driveFileId: z.string().trim().optional().default(''),
+  driveFileName: z.string().trim().optional().default(''),
+  driveFileUrl: z.string().trim().optional().default(''),
+})
+
+const DocumentFileUpdateFieldsSchema = z.object({
+  driveFileId: z.string().trim().optional(),
+  driveFileName: z.string().trim().optional(),
+  driveFileUrl: z.string().trim().optional(),
+})
+
+const DocumentFileInputSchema = DocumentFileFieldsSchema.superRefine((value, ctx) => {
+  if (!value.driveFileId && !value.driveFileUrl) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['driveFileUrl'],
+      message: 'Google Drive file ID or link is required',
+    })
+  }
+
+  if ((value.driveFileId || value.driveFileUrl) && !value.driveFileName) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['driveFileName'],
+      message: 'File name is required',
+    })
+  }
+})
+
 export const DocumentSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -44,14 +74,18 @@ export const DocumentCreateSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   price: z.number().min(0, 'Price must be positive'),
   category: z.string().min(1, 'Category is required'),
-  driveFileId: z.string().min(1, 'File is required'),
-  driveFileName: z.string().min(1, 'File name is required'),
-  driveFileUrl: z.string().url('Must be a valid URL'),
   thumbnailUrl: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
   isActive: z.boolean().default(true),
-})
+}).and(DocumentFileInputSchema)
 
-export const DocumentUpdateSchema = DocumentCreateSchema.partial()
+export const DocumentUpdateSchema = z.object({
+  title: z.string().min(1, 'Title is required').optional(),
+  description: z.string().min(1, 'Description is required').optional(),
+  price: z.number().min(0, 'Price must be positive').optional(),
+  category: z.string().min(1, 'Category is required').optional(),
+  thumbnailUrl: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
+  isActive: z.boolean().optional(),
+}).and(DocumentFileUpdateFieldsSchema)
 
 export type Document = z.infer<typeof DocumentSchema>
 export type Order = z.infer<typeof OrderSchema>

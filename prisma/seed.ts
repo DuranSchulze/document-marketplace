@@ -1,9 +1,8 @@
 import { PrismaClient } from '../src/generated/prisma/client.js'
 import { hashPassword } from '@better-auth/utils/password'
 
-const url = process.env.DATABASE_URL
-if (!url) throw new Error('DATABASE_URL is not set')
-const prisma = new PrismaClient({ accelerateUrl: url } as any)
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set')
+const prisma = new PrismaClient({ accelerateUrl: process.env.DATABASE_URL })
 
 // ─── Sample documents (placeholder Drive IDs for dev/testing) ─────────────────
 const SAMPLE_DOCUMENTS = [
@@ -167,16 +166,40 @@ async function seedSheetsHeaders() {
     return
   }
 
+  // Decode base64 PEM (Vercel-friendly) or normalize literal \n escapes.
+  const decodedPrivateKey = privateKey.includes('-----BEGIN')
+    ? privateKey.replace(/\\n/g, '\n').trim()
+    : Buffer.from(privateKey, 'base64').toString('utf-8').trim()
+
   const { google } = await import('googleapis')
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: serviceEmail,
-      private_key: privateKey.replace(/\\n/g, '\n'),
+      private_key: decodedPrivateKey,
     },
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   })
   const sheets = google.sheets({ version: 'v4', auth })
 
+  // Make sure both tabs exist (Sheets API throws if a referenced sheet/tab is missing).
+  const meta = await sheets.spreadsheets.get({ spreadsheetId: sheetsId })
+  const existingTabs = new Set(
+    meta.data.sheets?.map((s) => s.properties?.title).filter(Boolean) as string[],
+  )
+
+  const requiredTabs = ['Customers', 'Subscriptions']
+  const tabsToCreate = requiredTabs.filter((t) => !existingTabs.has(t))
+  if (tabsToCreate.length > 0) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: sheetsId,
+      requestBody: {
+        requests: tabsToCreate.map((title) => ({ addSheet: { properties: { title } } })),
+      },
+    })
+    console.log(`✅ Google Sheets: created tabs → ${tabsToCreate.join(', ')}`)
+  }
+
+  // Customers tab — one-time document orders
   await sheets.spreadsheets.values.update({
     spreadsheetId: sheetsId,
     range: 'Customers!A1:H1',
@@ -186,7 +209,29 @@ async function seedSheetsHeaders() {
     },
   })
 
-  console.log('✅ Google Sheets: Customers header row set')
+  // Subscriptions tab — nominee enrollments (attempts + status changes)
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: sheetsId,
+    range: 'Subscriptions!A1:K1',
+    valueInputOption: 'RAW',
+    requestBody: {
+      values: [[
+        'subscriptionId',
+        'planName',
+        'nomineeName',
+        'nomineeEmail',
+        'nomineePhone',
+        'nomineeAddress',
+        'paymentChannel',
+        'amount',
+        'status',
+        'event',
+        'recordedAt',
+      ]],
+    },
+  })
+
+  console.log('✅ Google Sheets: Customers + Subscriptions header rows set')
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────

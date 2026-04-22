@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import { Readable } from "node:stream";
 import { env } from "@/env";
+import { getGoogleDriveDownloadUrl } from "@/lib/google-drive";
 
 function parsePrivateKey(raw: string): string {
   if (!raw.includes("-----BEGIN")) {
@@ -60,7 +61,7 @@ export async function checkDriveConnection(): Promise<{
 }
 
 export function getDriveDirectUrl(fileId: string): string {
-  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+  return getGoogleDriveDownloadUrl(fileId);
 }
 
 async function getOrCreateCategoryFolder(

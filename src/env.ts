@@ -5,8 +5,9 @@ export const env = createEnv({
   server: {
     SERVER_URL: z.string().url().optional(),
     DATABASE_URL: z.string().min(1).optional(),
-    BETTER_AUTH_SECRET: z.string().min(1).optional(),
+    BETTER_AUTH_SECRET: z.string().min(32).optional(),
     BETTER_AUTH_URL: z.string().url().optional(),
+    BETTER_AUTH_TRUSTED_ORIGINS: z.string().optional(),
     // Xendit
     XENDIT_SECRET_KEY: z.string().min(1).optional(),
     XENDIT_WEBHOOK_TOKEN: z.string().min(1).optional(),
@@ -38,6 +39,7 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+    BETTER_AUTH_TRUSTED_ORIGINS: process.env.BETTER_AUTH_TRUSTED_ORIGINS,
     XENDIT_SECRET_KEY: process.env.XENDIT_SECRET_KEY,
     XENDIT_WEBHOOK_TOKEN: process.env.XENDIT_WEBHOOK_TOKEN,
     GOOGLE_DRIVE_ROOT_FOLDER_ID: process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID,

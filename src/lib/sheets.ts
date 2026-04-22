@@ -80,7 +80,14 @@ export interface CustomerRecord {
   buyerAddress: string
   amount: number
   purchasedAt: string
+  // Xendit traceability — paste these into the Xendit dashboard search to
+  // jump straight to the matching invoice.
+  xenditInvoiceId: string
+  xenditInvoiceUrl: string
+  xenditExternalId: string
 }
+
+const CUSTOMERS_RANGE = 'Customers!A:K'
 
 export async function appendCustomerRecord(record: CustomerRecord): Promise<void> {
   if (!isSheetsConfigured()) return
@@ -96,15 +103,71 @@ export async function appendCustomerRecord(record: CustomerRecord): Promise<void
       record.buyerAddress,
       String(record.amount),
       record.purchasedAt,
+      record.xenditInvoiceId,
+      record.xenditInvoiceUrl,
+      record.xenditExternalId,
     ]
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: env.GOOGLE_SHEETS_ID!,
-      range: 'Customers!A:H',
+      range: CUSTOMERS_RANGE,
       valueInputOption: 'RAW',
       requestBody: { values: [row] },
     })
   } catch (err) {
     console.error('Google Sheets error (appendCustomerRecord):', err)
+  }
+}
+
+export interface SubscriptionRecord {
+  subscriptionId: string
+  planName: string
+  nomineeName: string
+  nomineeEmail: string
+  nomineePhone: string
+  nomineeAddress: string
+  paymentChannel: string
+  amount: number
+  status: string // pending | active | failed | cancelled
+  event: string  // e.g. created | activated | payment_succeeded | payment_failed | cancelled
+  recordedAt: string
+  // Xendit traceability — searchable directly in the Xendit dashboard.
+  xenditCustomerId: string
+  xenditPaymentMethodId: string
+  xenditSubscriptionId: string
+}
+
+const SUBSCRIPTIONS_RANGE = 'Subscriptions!A:N'
+
+export async function appendSubscriptionRecord(record: SubscriptionRecord): Promise<void> {
+  if (!isSheetsConfigured()) return
+
+  try {
+    const sheets = getSheetsClient()
+    const row = [
+      record.subscriptionId,
+      record.planName,
+      record.nomineeName,
+      record.nomineeEmail,
+      record.nomineePhone,
+      record.nomineeAddress,
+      record.paymentChannel,
+      String(record.amount),
+      record.status,
+      record.event,
+      record.recordedAt,
+      record.xenditCustomerId,
+      record.xenditPaymentMethodId,
+      record.xenditSubscriptionId,
+    ]
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: env.GOOGLE_SHEETS_ID!,
+      range: SUBSCRIPTIONS_RANGE,
+      valueInputOption: 'RAW',
+      requestBody: { values: [row] },
+    })
+  } catch (err) {
+    console.error('Google Sheets error (appendSubscriptionRecord):', err)
   }
 }

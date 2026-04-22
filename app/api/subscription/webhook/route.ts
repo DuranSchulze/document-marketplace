@@ -3,6 +3,28 @@ import { verifyXenditWebhookToken } from '@/lib/xendit'
 import { prisma } from '@/db'
 import { env } from '@/env'
 import { createXenditRecurringPlan } from '@/lib/xendit-recurring'
+import { appendSubscriptionRecord } from '@/lib/sheets'
+
+async function logSubscriptionEvent(subscriptionId: string, status: string, event: string) {
+  const sub = await prisma.subscription.findUnique({
+    where: { id: subscriptionId },
+    include: { plan: true },
+  })
+  if (!sub) return
+  await appendSubscriptionRecord({
+    subscriptionId: sub.id,
+    planName: sub.plan.name,
+    nomineeName: sub.nomineeName,
+    nomineeEmail: sub.nomineeEmail,
+    nomineePhone: sub.nomineePhone,
+    nomineeAddress: sub.nomineeAddress ?? '',
+    paymentChannel: sub.paymentChannel ?? '',
+    amount: sub.plan.amount,
+    status,
+    event,
+    recordedAt: new Date().toISOString(),
+  })
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -59,8 +81,11 @@ export async function POST(request: NextRequest) {
         where: { id: subscription.id },
         data: { xenditSubscriptionId: plan.id, status: 'active', activatedAt: new Date() },
       })
+
+      await logSubscriptionEvent(subscription.id, 'active', 'payment_method_activated')
     } catch (err) {
       console.error('Failed to create recurring plan after payment_method.activated:', err)
+      await logSubscriptionEvent(subscription.id, 'failed', 'recurring_plan_create_failed')
     }
 
     return new Response('OK', { status: 200 })
@@ -73,6 +98,11 @@ export async function POST(request: NextRequest) {
         where: { id: referenceId },
         data: { status: 'active', activatedAt: new Date() },
       })
+      await logSubscriptionEvent(
+        referenceId,
+        'active',
+        event === 'recurring.plan.activated' ? 'plan_activated' : 'payment_succeeded',
+      )
     }
   } else if (
     event === 'recurring.plan.deactivated' ||
@@ -80,10 +110,16 @@ export async function POST(request: NextRequest) {
   ) {
     const referenceId = data.reference_id
     if (referenceId) {
+      const newStatus = event.includes('deactivated') ? 'cancelled' : 'failed'
       await prisma.subscription.updateMany({
         where: { id: referenceId },
-        data: { status: event.includes('deactivated') ? 'cancelled' : 'failed' },
+        data: { status: newStatus },
       })
+      await logSubscriptionEvent(
+        referenceId,
+        newStatus,
+        event.includes('deactivated') ? 'plan_deactivated' : 'payment_failed',
+      )
     }
   }
 

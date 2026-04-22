@@ -6,6 +6,7 @@ import {
   createXenditCustomer,
   createXenditPaymentMethod,
 } from '@/lib/xendit-recurring'
+import { appendSubscriptionRecord } from '@/lib/sheets'
 
 const BodySchema = z.object({
   planId: z.string().min(1),
@@ -64,6 +65,21 @@ export async function POST(request: NextRequest) {
       authUrl: pm.authUrl,
       status: 'pending',
     },
+  })
+
+  // Audit log: record every enrollment attempt (even those that never finish auth)
+  await appendSubscriptionRecord({
+    subscriptionId,
+    planName: plan.name,
+    nomineeName: body.nomineeName,
+    nomineeEmail: body.nomineeEmail,
+    nomineePhone: body.nomineePhone,
+    nomineeAddress: body.nomineeAddress ?? '',
+    paymentChannel: body.paymentChannel,
+    amount: plan.amount,
+    status: 'pending',
+    event: 'created',
+    recordedAt: new Date().toISOString(),
   })
 
   return Response.json({ authUrl: pm.authUrl, subscriptionId })

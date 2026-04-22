@@ -31,28 +31,26 @@ export function EditDocumentClient({ document }: { document: DocumentLike }) {
   }
 
   return (
-    <div>
-      <div className="mb-8">
+    <div className="mx-auto w-full max-w-2xl">
+      <div className="mb-8 text-center">
         <p className="island-kicker mb-1">Admin</p>
         <h1 className="text-2xl font-bold text-[var(--sea-ink)]">Edit Document</h1>
       </div>
-      <div className="max-w-2xl">
-        <DocumentForm
-          defaultValues={{
-            title: document.title,
-            description: document.description,
-            price: document.price,
-            category: document.category,
-            driveFileId: document.driveFileId,
-            driveFileName: document.driveFileName,
-            driveFileUrl: document.driveFileUrl,
-            thumbnailUrl: document.thumbnailUrl ?? '',
-            isActive: document.isActive,
-          }}
-          onSubmit={handleSubmit}
-          submitLabel="Save Changes"
-        />
-      </div>
+      <DocumentForm
+        defaultValues={{
+          title: document.title,
+          description: document.description,
+          price: document.price,
+          category: document.category,
+          driveFileId: document.driveFileId,
+          driveFileName: document.driveFileName,
+          driveFileUrl: document.driveFileUrl,
+          thumbnailUrl: document.thumbnailUrl ?? '',
+          isActive: document.isActive,
+        }}
+        onSubmit={handleSubmit}
+        submitLabel="Save Changes"
+      />
     </div>
   )
 }
