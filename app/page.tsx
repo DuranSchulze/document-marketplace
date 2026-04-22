@@ -1,13 +1,15 @@
-import { prisma } from '@/db'
-import { DocumentCard } from '@/components/DocumentCard'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import { prisma } from "@/db";
+import { DocumentCard } from "@/components/DocumentCard";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
+export const dynamic = "force-dynamic";
 
 export default async function StorefrontPage() {
   const documents = await prisma.document.findMany({
     where: { isActive: true },
-    orderBy: { createdAt: 'desc' },
-  })
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <>
@@ -21,7 +23,8 @@ export default async function StorefrontPage() {
             Ready-to-use documents
           </h1>
           <p className="mb-0 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-            Browse our collection of professional documents. Purchase and download instantly after payment.
+            Browse our collection of professional documents. Purchase and
+            download instantly after payment.
           </p>
         </section>
 
@@ -40,5 +43,5 @@ export default async function StorefrontPage() {
       </main>
       <Footer />
     </>
-  )
+  );
 }

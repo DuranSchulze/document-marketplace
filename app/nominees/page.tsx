@@ -3,6 +3,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { NomineesForm } from "./NomineesForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function NomineesPage() {
   const plans = await prisma.subscriptionPlan.findMany({
     where: { isActive: true },
