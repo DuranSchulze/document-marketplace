@@ -29,12 +29,6 @@ export default function Header() {
           >
             Browse
           </Link>
-          <Link
-            href="/nominees"
-            className={`nav-link${pathname === "/nominees" ? " is-active" : ""}`}
-          >
-            Nominees
-          </Link>
         </div>
 
         {/* Right side actions */}

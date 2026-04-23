@@ -55,12 +55,12 @@ export function AdminLoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--foam)] px-4">
+    <div className="admin-page min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="island-shell rounded-2xl p-8">
+        <div className="admin-panel rounded-2xl p-8">
           <div className="mb-8 text-center">
             <p className="island-kicker mb-2">Admin Portal</p>
-            <h1 className="text-2xl font-bold text-[var(--sea-ink)]">
+            <h1 className="admin-text text-2xl font-bold">
               Sign In
             </h1>
           </div>
@@ -69,7 +69,7 @@ export function AdminLoginForm() {
             <div>
               <Label
                 htmlFor="email"
-                className="text-sm font-medium text-[var(--sea-ink)]"
+                className="admin-field text-sm font-medium"
               >
                 Email
               </Label>
@@ -87,7 +87,7 @@ export function AdminLoginForm() {
             <div>
               <Label
                 htmlFor="password"
-                className="text-sm font-medium text-[var(--sea-ink)]"
+                className="admin-field text-sm font-medium"
               >
                 Password
               </Label>
@@ -108,7 +108,7 @@ export function AdminLoginForm() {
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
                   tabIndex={-1}
-                  className="absolute inset-y-0 right-0 flex items-center justify-center px-3 text-[var(--sea-ink-soft)] hover:text-[var(--sea-ink)] transition-colors"
+                  className="admin-muted absolute inset-y-0 right-0 flex items-center justify-center px-3 hover:text-[var(--admin-text)] transition-colors"
                 >
                   {showPassword ? (
                     // eye-off
@@ -152,13 +152,13 @@ export function AdminLoginForm() {
             </div>
 
             {notice && !error && (
-              <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-900">
+              <div className="admin-alert-warning rounded-lg px-4 py-3 text-sm">
                 {notice}
               </div>
             )}
 
             {error && (
-              <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+              <div className="admin-alert-error rounded-lg px-4 py-3 text-sm">
                 {error}
               </div>
             )}

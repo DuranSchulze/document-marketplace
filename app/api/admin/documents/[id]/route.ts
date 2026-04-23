@@ -51,6 +51,24 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const unauthorized = await requireAdminApi(request)
   if (unauthorized) return unauthorized
   const { id } = await params
-  await prisma.document.update({ where: { id }, data: { isActive: false } })
-  return Response.json({ ok: true })
+  const existing = await prisma.document.findUnique({
+    where: { id },
+    select: { id: true, _count: { select: { orders: true } } },
+  })
+  if (!existing) {
+    return Response.json({ error: 'Document not found' }, { status: 404 })
+  }
+
+  if (existing._count.orders > 0) {
+    await prisma.document.update({ where: { id }, data: { isActive: false } })
+    return Response.json({
+      ok: true,
+      deleted: false,
+      deactivated: true,
+      reason: 'has_orders',
+    })
+  }
+
+  await prisma.document.delete({ where: { id } })
+  return Response.json({ ok: true, deleted: true })
 }

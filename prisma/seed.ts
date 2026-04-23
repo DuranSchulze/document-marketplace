@@ -202,31 +202,48 @@ async function seedSheetsHeaders() {
   // Customers tab — one-time document orders
   await sheets.spreadsheets.values.update({
     spreadsheetId: sheetsId,
-    range: 'Customers!A1:H1',
-    valueInputOption: 'RAW',
-    requestBody: {
-      values: [['orderId', 'documentTitle', 'buyerName', 'buyerEmail', 'buyerPhone', 'buyerAddress', 'amount', 'purchasedAt']],
-    },
-  })
-
-  // Subscriptions tab — nominee enrollments (attempts + status changes)
-  await sheets.spreadsheets.values.update({
-    spreadsheetId: sheetsId,
-    range: 'Subscriptions!A1:K1',
+    range: 'Customers!A1:L1',
     valueInputOption: 'RAW',
     requestBody: {
       values: [[
+        'orderId',
+        'documentTitle',
+        'buyerName',
+        'buyerEmail',
+        'buyerPhone',
+        'buyerAddress',
+        'amount',
+        'purchasedAt',
+        'xenditInvoiceId',
+        'xenditInvoiceUrl',
+        'xenditExternalId',
+        'downloadUrl',
+      ]],
+    },
+  })
+
+  // Subscriptions tab — subscriber enrollments (attempts + status changes)
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: sheetsId,
+    range: 'Subscriptions!A1:O1',
+    valueInputOption: 'RAW',
+    requestBody: {
+      values: [[
+        'eventKey',
         'subscriptionId',
         'planName',
-        'nomineeName',
-        'nomineeEmail',
-        'nomineePhone',
-        'nomineeAddress',
+        'subscriberName',
+        'subscriberEmail',
+        'subscriberPhone',
+        'subscriberAddress',
         'paymentChannel',
         'amount',
         'status',
         'event',
         'recordedAt',
+        'xenditCustomerId',
+        'xenditPaymentMethodId',
+        'xenditSubscriptionId',
       ]],
     },
   })

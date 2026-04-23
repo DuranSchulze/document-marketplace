@@ -29,11 +29,13 @@ export type AggregateSubscriptionPlan = {
 export type SubscriptionPlanAvgAggregateOutputType = {
   amount: number | null
   intervalCount: number | null
+  durationMonths: number | null
 }
 
 export type SubscriptionPlanSumAggregateOutputType = {
   amount: number | null
   intervalCount: number | null
+  durationMonths: number | null
 }
 
 export type SubscriptionPlanMinAggregateOutputType = {
@@ -42,6 +44,7 @@ export type SubscriptionPlanMinAggregateOutputType = {
   description: string | null
   amount: number | null
   intervalCount: number | null
+  durationMonths: number | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -53,6 +56,7 @@ export type SubscriptionPlanMaxAggregateOutputType = {
   description: string | null
   amount: number | null
   intervalCount: number | null
+  durationMonths: number | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -64,6 +68,7 @@ export type SubscriptionPlanCountAggregateOutputType = {
   description: number
   amount: number
   intervalCount: number
+  durationMonths: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -74,11 +79,13 @@ export type SubscriptionPlanCountAggregateOutputType = {
 export type SubscriptionPlanAvgAggregateInputType = {
   amount?: true
   intervalCount?: true
+  durationMonths?: true
 }
 
 export type SubscriptionPlanSumAggregateInputType = {
   amount?: true
   intervalCount?: true
+  durationMonths?: true
 }
 
 export type SubscriptionPlanMinAggregateInputType = {
@@ -87,6 +94,7 @@ export type SubscriptionPlanMinAggregateInputType = {
   description?: true
   amount?: true
   intervalCount?: true
+  durationMonths?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -98,6 +106,7 @@ export type SubscriptionPlanMaxAggregateInputType = {
   description?: true
   amount?: true
   intervalCount?: true
+  durationMonths?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -109,6 +118,7 @@ export type SubscriptionPlanCountAggregateInputType = {
   description?: true
   amount?: true
   intervalCount?: true
+  durationMonths?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -207,6 +217,7 @@ export type SubscriptionPlanGroupByOutputType = {
   description: string
   amount: number
   intervalCount: number
+  durationMonths: number
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -241,6 +252,7 @@ export type SubscriptionPlanWhereInput = {
   description?: Prisma.StringFilter<"SubscriptionPlan"> | string
   amount?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   intervalCount?: Prisma.IntFilter<"SubscriptionPlan"> | number
+  durationMonths?: Prisma.IntFilter<"SubscriptionPlan"> | number
   isActive?: Prisma.BoolFilter<"SubscriptionPlan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
@@ -253,6 +265,7 @@ export type SubscriptionPlanOrderByWithRelationInput = {
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   intervalCount?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -268,6 +281,7 @@ export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringFilter<"SubscriptionPlan"> | string
   amount?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   intervalCount?: Prisma.IntFilter<"SubscriptionPlan"> | number
+  durationMonths?: Prisma.IntFilter<"SubscriptionPlan"> | number
   isActive?: Prisma.BoolFilter<"SubscriptionPlan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
@@ -280,6 +294,7 @@ export type SubscriptionPlanOrderByWithAggregationInput = {
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   intervalCount?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -299,6 +314,7 @@ export type SubscriptionPlanScalarWhereWithAggregatesInput = {
   description?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
   amount?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
   intervalCount?: Prisma.IntWithAggregatesFilter<"SubscriptionPlan"> | number
+  durationMonths?: Prisma.IntWithAggregatesFilter<"SubscriptionPlan"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"SubscriptionPlan"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SubscriptionPlan"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SubscriptionPlan"> | Date | string
@@ -310,6 +326,7 @@ export type SubscriptionPlanCreateInput = {
   description: string
   amount: number
   intervalCount?: number
+  durationMonths?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -322,6 +339,7 @@ export type SubscriptionPlanUncheckedCreateInput = {
   description: string
   amount: number
   intervalCount?: number
+  durationMonths?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -334,6 +352,7 @@ export type SubscriptionPlanUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   intervalCount?: Prisma.IntFieldUpdateOperationsInput | number
+  durationMonths?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -346,6 +365,7 @@ export type SubscriptionPlanUncheckedUpdateInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   intervalCount?: Prisma.IntFieldUpdateOperationsInput | number
+  durationMonths?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -358,6 +378,7 @@ export type SubscriptionPlanCreateManyInput = {
   description: string
   amount: number
   intervalCount?: number
+  durationMonths?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -369,6 +390,7 @@ export type SubscriptionPlanUpdateManyMutationInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   intervalCount?: Prisma.IntFieldUpdateOperationsInput | number
+  durationMonths?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -380,6 +402,7 @@ export type SubscriptionPlanUncheckedUpdateManyInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   intervalCount?: Prisma.IntFieldUpdateOperationsInput | number
+  durationMonths?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -391,6 +414,7 @@ export type SubscriptionPlanCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   intervalCount?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -399,6 +423,7 @@ export type SubscriptionPlanCountOrderByAggregateInput = {
 export type SubscriptionPlanAvgOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   intervalCount?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
 }
 
 export type SubscriptionPlanMaxOrderByAggregateInput = {
@@ -407,6 +432,7 @@ export type SubscriptionPlanMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   intervalCount?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -418,6 +444,7 @@ export type SubscriptionPlanMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   intervalCount?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -426,6 +453,7 @@ export type SubscriptionPlanMinOrderByAggregateInput = {
 export type SubscriptionPlanSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   intervalCount?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
 }
 
 export type SubscriptionPlanScalarRelationFilter = {
@@ -461,6 +489,7 @@ export type SubscriptionPlanCreateWithoutSubscriptionsInput = {
   description: string
   amount: number
   intervalCount?: number
+  durationMonths?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -472,6 +501,7 @@ export type SubscriptionPlanUncheckedCreateWithoutSubscriptionsInput = {
   description: string
   amount: number
   intervalCount?: number
+  durationMonths?: number
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -499,6 +529,7 @@ export type SubscriptionPlanUpdateWithoutSubscriptionsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   intervalCount?: Prisma.IntFieldUpdateOperationsInput | number
+  durationMonths?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -510,6 +541,7 @@ export type SubscriptionPlanUncheckedUpdateWithoutSubscriptionsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   intervalCount?: Prisma.IntFieldUpdateOperationsInput | number
+  durationMonths?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -552,6 +584,7 @@ export type SubscriptionPlanSelect<ExtArgs extends runtime.Types.Extensions.Inte
   description?: boolean
   amount?: boolean
   intervalCount?: boolean
+  durationMonths?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -565,6 +598,7 @@ export type SubscriptionPlanSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   description?: boolean
   amount?: boolean
   intervalCount?: boolean
+  durationMonths?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -576,6 +610,7 @@ export type SubscriptionPlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   description?: boolean
   amount?: boolean
   intervalCount?: boolean
+  durationMonths?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -587,12 +622,13 @@ export type SubscriptionPlanSelectScalar = {
   description?: boolean
   amount?: boolean
   intervalCount?: boolean
+  durationMonths?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SubscriptionPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "amount" | "intervalCount" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["subscriptionPlan"]>
+export type SubscriptionPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "amount" | "intervalCount" | "durationMonths" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["subscriptionPlan"]>
 export type SubscriptionPlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   subscriptions?: boolean | Prisma.SubscriptionPlan$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.SubscriptionPlanCountOutputTypeDefaultArgs<ExtArgs>
@@ -611,6 +647,7 @@ export type $SubscriptionPlanPayload<ExtArgs extends runtime.Types.Extensions.In
     description: string
     amount: number
     intervalCount: number
+    durationMonths: number
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1043,6 +1080,7 @@ export interface SubscriptionPlanFieldRefs {
   readonly description: Prisma.FieldRef<"SubscriptionPlan", 'String'>
   readonly amount: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
   readonly intervalCount: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
+  readonly durationMonths: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
   readonly isActive: Prisma.FieldRef<"SubscriptionPlan", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"SubscriptionPlan", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"SubscriptionPlan", 'DateTime'>

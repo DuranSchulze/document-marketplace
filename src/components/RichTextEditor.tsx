@@ -71,12 +71,12 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
 
   if (!editor) {
     return (
-      <div className="min-h-[220px] rounded-md border border-input bg-[rgba(23,58,64,0.02)] animate-pulse" />
+      <div className="min-h-[220px] rounded-md border border-input bg-[var(--admin-table-head)] animate-pulse" />
     )
   }
 
   return (
-    <div className="rounded-md border border-input bg-white focus-within:ring-2 focus-within:ring-ring/40 transition">
+    <div className="admin-field rounded-md border border-input bg-[var(--admin-panel-strong)] focus-within:ring-2 focus-within:ring-ring/40 transition">
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
     </div>
@@ -89,7 +89,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
 
 function Toolbar({ editor }: { editor: Editor }) {
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-input px-2 py-1.5 bg-[rgba(23,58,64,0.02)]">
+    <div className="flex flex-wrap items-center gap-1 border-b border-input px-2 py-1.5 bg-[var(--admin-table-head)]">
       <ToolbarButton
         active={editor.isActive('heading', { level: 2 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -205,8 +205,8 @@ function ToolbarButton({
       aria-pressed={!!active}
       className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
         active
-          ? 'bg-[rgba(79,184,178,0.18)] text-[var(--lagoon-deep)]'
-          : 'text-[var(--sea-ink-soft)] hover:bg-[rgba(23,58,64,0.06)] hover:text-[var(--sea-ink)]'
+          ? 'bg-[var(--admin-row-hover)] text-[var(--admin-link)]'
+          : 'admin-muted hover:bg-[var(--admin-row-hover)] hover:text-[var(--admin-text)]'
       }`}
     >
       {children}
@@ -215,5 +215,5 @@ function ToolbarButton({
 }
 
 function Divider() {
-  return <span className="mx-1 h-4 w-px bg-[rgba(23,58,64,0.12)]" />
+  return <span className="mx-1 h-4 w-px bg-[var(--admin-border-soft)]" />
 }

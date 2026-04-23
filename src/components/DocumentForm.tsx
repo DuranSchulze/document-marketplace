@@ -74,13 +74,13 @@ export function DocumentForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="island-shell rounded-2xl p-6 space-y-5"
+      className="admin-panel rounded-2xl p-6 space-y-5"
     >
       {/* Title */}
       <div>
         <Label
           htmlFor="title"
-          className="text-sm font-medium text-[var(--sea-ink)]"
+          className="admin-field text-sm font-medium"
         >
           Title
         </Label>
@@ -102,7 +102,7 @@ export function DocumentForm({
       <div>
         <Label
           htmlFor="description"
-          className="text-sm font-medium text-[var(--sea-ink)]"
+          className="admin-field text-sm font-medium"
         >
           Description
         </Label>
@@ -124,7 +124,7 @@ export function DocumentForm({
         <div>
           <Label
             htmlFor="price"
-            className="text-sm font-medium text-[var(--sea-ink)]"
+            className="admin-field text-sm font-medium"
           >
             Price (PHP)
           </Label>
@@ -153,7 +153,7 @@ export function DocumentForm({
         <div>
           <Label
             htmlFor="category"
-            className="text-sm font-medium text-[var(--sea-ink)]"
+            className="admin-field text-sm font-medium"
           >
             Category
           </Label>
@@ -163,7 +163,7 @@ export function DocumentForm({
             onChange={(e) =>
               setForm((current) => ({ ...current, category: e.target.value }))
             }
-            className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="admin-field mt-1 flex h-9 w-full rounded-md border border-input bg-input/30 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <option value="">Select category…</option>
             {CATEGORIES.map((category) => (
@@ -180,15 +180,15 @@ export function DocumentForm({
 
       {/* Document file (Google Drive link) */}
       <div className="space-y-4">
-        <Label className="text-sm font-medium text-[var(--sea-ink)] block">
+        <Label className="admin-field text-sm font-medium block">
           Document File
         </Label>
 
         {form.driveFileId && (
           <>
-            <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+            <div className="admin-alert-success flex items-center gap-3 rounded-xl px-4 py-3">
               <svg
-                className="w-5 h-5 text-emerald-600 shrink-0"
+                className="w-5 h-5 shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -201,17 +201,17 @@ export function DocumentForm({
                 />
               </svg>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-emerald-800 truncate">
+                <p className="text-sm font-medium truncate">
                   {form.driveFileName || "Drive file linked"}
                 </p>
-                <p className="text-xs text-emerald-600">
+                <p className="text-xs opacity-80">
                   Google Drive file linked and ready for client download
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowPreview((prev) => !prev)}
-                className="text-xs text-emerald-700 hover:text-emerald-900 underline shrink-0"
+                className="text-xs underline shrink-0"
               >
                 {showPreview ? "Hide preview" : "Show preview"}
               </button>
@@ -226,23 +226,23 @@ export function DocumentForm({
                   }));
                   setShowPreview(true);
                 }}
-                className="text-xs text-emerald-700 hover:text-emerald-900 underline shrink-0"
+                className="text-xs underline shrink-0"
               >
                 Clear
               </button>
             </div>
 
             {showPreview && (
-              <div className="overflow-hidden rounded-xl border border-[rgba(23,58,64,0.12)] bg-[rgba(23,58,64,0.03)]">
-                <div className="flex items-center justify-between gap-2 border-b border-[rgba(23,58,64,0.08)] px-4 py-2">
-                  <p className="text-xs font-medium text-[var(--sea-ink-soft)]">
+              <div className="admin-border overflow-hidden rounded-xl border bg-[var(--admin-panel)]">
+                <div className="admin-border flex items-center justify-between gap-2 border-b px-4 py-2">
+                  <p className="admin-muted text-xs font-medium">
                     File preview (Google Drive)
                   </p>
                   <a
                     href={`https://drive.google.com/file/d/${form.driveFileId}/view`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-[var(--lagoon-deep)] hover:underline"
+                    className="admin-link text-xs"
                   >
                     Open in Drive ↗
                   </a>
@@ -251,12 +251,12 @@ export function DocumentForm({
                   key={form.driveFileId}
                   src={`https://drive.google.com/file/d/${form.driveFileId}/preview`}
                   title={form.driveFileName || "Document preview"}
-                  className="block w-full bg-white"
+                  className="block w-full bg-white dark:bg-slate-950"
                   style={{ height: 480 }}
                   allow="autoplay"
                   loading="lazy"
                 />
-                <p className="px-4 py-2 text-[11px] text-[var(--sea-ink-soft)] border-t border-[rgba(23,58,64,0.08)]">
+                <p className="admin-border admin-muted px-4 py-2 text-[11px] border-t">
                   Preview only loads if the Drive file is shared with
                   &quot;Anyone with the link&quot; or with the viewer&apos;s
                   Google account.
@@ -270,7 +270,7 @@ export function DocumentForm({
           <div>
             <Label
               htmlFor="driveFileUrl"
-              className="text-sm font-medium text-[var(--sea-ink)]"
+              className="admin-field text-sm font-medium"
             >
               Google Drive Link or File ID
             </Label>
@@ -297,7 +297,7 @@ export function DocumentForm({
           <div>
             <Label
               htmlFor="driveFileName"
-              className="text-sm font-medium text-[var(--sea-ink)]"
+              className="admin-field text-sm font-medium"
             >
               Download File Name
             </Label>
@@ -326,7 +326,7 @@ export function DocumentForm({
       <div>
         <Label
           htmlFor="thumbnailUrl"
-          className="text-sm font-medium text-[var(--sea-ink)]"
+          className="admin-field text-sm font-medium"
         >
           Thumbnail URL (optional)
         </Label>
@@ -356,14 +356,14 @@ export function DocumentForm({
         />
         <Label
           htmlFor="isActive"
-          className="text-sm font-medium text-[var(--sea-ink)] cursor-pointer"
+          className="admin-field text-sm font-medium cursor-pointer"
         >
           Active (visible on storefront)
         </Label>
       </div>
 
       {submitError && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="admin-alert-error rounded-lg px-4 py-3 text-sm">
           {submitError}
         </div>
       )}

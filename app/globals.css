@@ -34,6 +34,29 @@
   --link-bg-hover: rgba(255, 255, 255, 0.9);
   --hero-a: rgba(79, 184, 178, 0.36);
   --hero-b: rgba(47, 106, 74, 0.2);
+  --admin-bg: #eef7f1;
+  --admin-shell: #f6fbf7;
+  --admin-sidebar: rgba(255, 255, 255, 0.92);
+  --admin-panel: rgba(255, 255, 255, 0.86);
+  --admin-panel-strong: rgba(255, 255, 255, 0.96);
+  --admin-table-head: rgba(47, 106, 74, 0.07);
+  --admin-row-hover: rgba(79, 184, 178, 0.08);
+  --admin-border: rgba(23, 58, 64, 0.14);
+  --admin-border-soft: rgba(23, 58, 64, 0.08);
+  --admin-text: #173a40;
+  --admin-muted: #526f74;
+  --admin-link: #237e87;
+  --admin-link-hover: #175e65;
+  --admin-danger: #b42318;
+  --admin-danger-hover: #8f1d14;
+  --admin-danger-surface: #fff1f0;
+  --admin-danger-border: #ffc9c2;
+  --admin-success: #176b45;
+  --admin-success-surface: #ecfdf3;
+  --admin-success-border: #b7efcb;
+  --admin-warning: #8a4b00;
+  --admin-warning-surface: #fff8e6;
+  --admin-warning-border: #f8d77a;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -90,6 +113,29 @@
   --link-bg-hover: rgba(24, 44, 49, 0.8);
   --hero-a: rgba(96, 215, 207, 0.18);
   --hero-b: rgba(110, 200, 154, 0.12);
+  --admin-bg: #081519;
+  --admin-shell: #0c1b20;
+  --admin-sidebar: rgba(13, 28, 32, 0.96);
+  --admin-panel: rgba(16, 33, 38, 0.92);
+  --admin-panel-strong: rgba(19, 39, 44, 0.98);
+  --admin-table-head: rgba(141, 229, 219, 0.1);
+  --admin-row-hover: rgba(141, 229, 219, 0.08);
+  --admin-border: rgba(162, 230, 222, 0.2);
+  --admin-border-soft: rgba(162, 230, 222, 0.12);
+  --admin-text: #dff3ef;
+  --admin-muted: #a7c5c0;
+  --admin-link: #8de5db;
+  --admin-link-hover: #b7fff4;
+  --admin-danger: #ffb4aa;
+  --admin-danger-hover: #ffd4ce;
+  --admin-danger-surface: rgba(127, 29, 29, 0.32);
+  --admin-danger-border: rgba(248, 113, 113, 0.42);
+  --admin-success: #8ee8b1;
+  --admin-success-surface: rgba(20, 83, 45, 0.34);
+  --admin-success-border: rgba(74, 222, 128, 0.36);
+  --admin-warning: #f6d589;
+  --admin-warning-surface: rgba(113, 63, 18, 0.34);
+  --admin-warning-border: rgba(251, 191, 36, 0.36);
 
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
@@ -372,6 +418,160 @@ a {
 .site-footer {
   border-top: 1px solid var(--line);
   background: color-mix(in oklab, var(--header-bg) 84%, transparent 16%);
+}
+
+.admin-page {
+  background:
+    radial-gradient(900px 520px at -10% -10%, color-mix(in oklab, var(--lagoon) 22%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--admin-shell), var(--admin-bg));
+  color: var(--admin-text);
+}
+
+.admin-panel {
+  border: 1px solid var(--admin-border);
+  background: linear-gradient(165deg, var(--admin-panel-strong), var(--admin-panel));
+  box-shadow:
+    0 1px 0 var(--inset-glint) inset,
+    0 18px 38px rgba(2, 18, 22, 0.1);
+}
+
+.admin-sidebar {
+  border-color: var(--admin-border-soft);
+  background: var(--admin-sidebar);
+  color: var(--admin-text);
+}
+
+.admin-border {
+  border-color: var(--admin-border-soft);
+}
+
+.admin-text {
+  color: var(--admin-text);
+}
+
+.admin-muted {
+  color: var(--admin-muted);
+}
+
+.admin-link {
+  color: var(--admin-link);
+  text-decoration: none;
+}
+
+.admin-link:hover {
+  color: var(--admin-link-hover);
+  text-decoration: underline;
+}
+
+.admin-danger-action {
+  color: var(--admin-danger);
+}
+
+.admin-danger-action:hover {
+  color: var(--admin-danger-hover);
+}
+
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table {
+  min-width: 760px;
+  color: var(--admin-text);
+}
+
+.admin-table-head {
+  border-bottom: 1px solid var(--admin-border-soft);
+  background: var(--admin-table-head);
+}
+
+.admin-table-head th {
+  color: var(--admin-muted);
+}
+
+.admin-table-body {
+  --tw-divide-color: var(--admin-border-soft);
+}
+
+.admin-table-row:hover {
+  background: var(--admin-row-hover);
+}
+
+.admin-empty {
+  color: var(--admin-muted);
+}
+
+.admin-tab-list {
+  border-bottom: 1px solid var(--admin-border-soft);
+}
+
+.admin-tab-active {
+  border-color: var(--admin-link);
+  color: var(--admin-link);
+}
+
+.admin-tab-inactive {
+  border-color: transparent;
+  color: var(--admin-muted);
+}
+
+.admin-tab-inactive:hover {
+  color: var(--admin-text);
+}
+
+.admin-field {
+  color: var(--admin-text);
+}
+
+.admin-alert-success,
+.admin-alert-warning,
+.admin-alert-error {
+  border-width: 1px;
+  border-style: solid;
+}
+
+.admin-alert-success {
+  border-color: var(--admin-success-border);
+  background: var(--admin-success-surface);
+  color: var(--admin-success);
+}
+
+.admin-alert-warning {
+  border-color: var(--admin-warning-border);
+  background: var(--admin-warning-surface);
+  color: var(--admin-warning);
+}
+
+.admin-alert-error {
+  border-color: var(--admin-danger-border);
+  background: var(--admin-danger-surface);
+  color: var(--admin-danger);
+}
+
+.admin-status-active,
+.admin-status-paid {
+  border-color: var(--admin-success-border) !important;
+  background: var(--admin-success-surface) !important;
+  color: var(--admin-success) !important;
+}
+
+.admin-status-pending {
+  border-color: var(--admin-warning-border) !important;
+  background: var(--admin-warning-surface) !important;
+  color: var(--admin-warning) !important;
+}
+
+.admin-status-failed {
+  border-color: var(--admin-danger-border) !important;
+  background: var(--admin-danger-surface) !important;
+  color: var(--admin-danger) !important;
+}
+
+.admin-status-inactive {
+  border-color: var(--admin-border) !important;
+  background: color-mix(in oklab, var(--admin-panel) 72%, transparent) !important;
+  color: var(--admin-muted) !important;
 }
 
 @layer base {

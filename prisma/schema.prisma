@@ -99,6 +99,7 @@ model SubscriptionPlan {
   description   String
   amount        Float
   intervalCount Int            @default(1)
+  durationMonths Int           @default(1)
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -116,6 +117,8 @@ model Subscription {
   paymentChannel        String?
   xenditCustomerId      String?
   xenditPaymentMethodId String?          @unique
+  xenditPaymentSessionId String?
+  xenditPaymentTokenId  String?
   xenditSubscriptionId  String?          @unique
   authUrl               String?
   status                String           @default("pending")

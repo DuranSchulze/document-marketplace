@@ -27,14 +27,14 @@ export function EditDocumentClient({ document }: { document: DocumentLike }) {
       body: JSON.stringify(data),
     })
     if (!res.ok) throw new Error('Failed to update document')
-    router.push('/admin/dashboard')
+    router.push('/admin/documents')
   }
 
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="mb-8 text-center">
         <p className="island-kicker mb-1">Admin</p>
-        <h1 className="text-2xl font-bold text-[var(--sea-ink)]">Edit Document</h1>
+        <h1 className="admin-text text-2xl font-bold">Edit Document</h1>
       </div>
       <DocumentForm
         defaultValues={{

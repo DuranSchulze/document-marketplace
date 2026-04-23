@@ -72,7 +72,7 @@ export async function finalizePaidOrder({
   })
 
   try {
-    await appendCustomerRecord({
+    const sheetsResult = await appendCustomerRecord({
       orderId: order.id,
       documentTitle: order.documentTitle,
       buyerName: order.buyerName,
@@ -84,10 +84,26 @@ export async function finalizePaidOrder({
       xenditInvoiceId: xenditInvoiceId ?? order.xenditInvoiceId ?? '',
       xenditInvoiceUrl: order.xenditPaymentUrl ?? '',
       xenditExternalId: xenditExternalId ?? order.id,
+      downloadUrl,
     })
-    console.info(`[order-finalize:${source}] Customer record appended to Sheets`, {
-      orderId: order.id,
-    })
+    if (sheetsResult.ok && sheetsResult.appended) {
+      console.info(`[order-finalize:${source}] Customer record appended to Sheets`, {
+        orderId: order.id,
+        key: sheetsResult.key,
+      })
+    } else if (sheetsResult.ok && sheetsResult.skipped) {
+      console.info(`[order-finalize:${source}] Customer Sheets append skipped`, {
+        orderId: order.id,
+        key: sheetsResult.key,
+        reason: sheetsResult.reason,
+      })
+    } else {
+      console.error(`[order-finalize:${source}] Customer Sheets append failed`, {
+        orderId: order.id,
+        key: sheetsResult.key,
+        error: sheetsResult.error,
+      })
+    }
   } catch (error) {
     console.error(`[order-finalize:${source}] Sheets append failed`, {
       orderId: order.id,

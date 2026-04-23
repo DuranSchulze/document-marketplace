@@ -1146,6 +1146,7 @@ export const SubscriptionPlanScalarFieldEnum = {
   description: 'description',
   amount: 'amount',
   intervalCount: 'intervalCount',
+  durationMonths: 'durationMonths',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1164,6 +1165,8 @@ export const SubscriptionScalarFieldEnum = {
   paymentChannel: 'paymentChannel',
   xenditCustomerId: 'xenditCustomerId',
   xenditPaymentMethodId: 'xenditPaymentMethodId',
+  xenditPaymentSessionId: 'xenditPaymentSessionId',
+  xenditPaymentTokenId: 'xenditPaymentTokenId',
   xenditSubscriptionId: 'xenditSubscriptionId',
   authUrl: 'authUrl',
   status: 'status',

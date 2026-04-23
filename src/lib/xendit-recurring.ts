@@ -85,6 +85,89 @@ export async function createXenditPaymentMethod(params: {
   return { id: data.id, authUrl: action.url }
 }
 
+export async function createXenditSubscriptionSession(params: {
+  referenceId: string
+  subscriberName: string
+  subscriberEmail: string
+  subscriberPhone: string
+  amount: number
+  intervalCount: number
+  totalRecurrence: number
+  description: string
+  successReturnUrl: string
+  cancelReturnUrl: string
+}): Promise<{ id: string; paymentLinkUrl: string }> {
+  const res = await xenditFetch('/sessions', {
+    method: 'POST',
+    body: JSON.stringify({
+      reference_id: params.referenceId,
+      session_type: 'SUBSCRIPTION',
+      mode: 'PAYMENT_LINK',
+      amount: params.amount,
+      currency: 'PHP',
+      country: 'PH',
+      customer: {
+        reference_id: `cust_${params.referenceId}`,
+        type: 'INDIVIDUAL',
+        email: params.subscriberEmail,
+        mobile_number: normalizePhone(params.subscriberPhone),
+        individual_detail: {
+          given_names: params.subscriberName,
+        },
+      },
+      locale: 'en',
+      description: params.description,
+      subscription: {
+        schedule: {
+          interval: 'MONTH',
+          interval_count: params.intervalCount,
+          total_recurrence: params.totalRecurrence,
+          anchor_date: nextSafeMonthlyAnchorDate(),
+          retry_interval: 'DAY',
+          retry_interval_count: 1,
+          total_retry: 3,
+          failed_attempt_notifications: [1, 2, 3],
+          payment_link_for_failed_attempt: true,
+        },
+        failed_cycle_action: 'RESUME',
+      },
+      success_return_url: params.successReturnUrl,
+      cancel_return_url: params.cancelReturnUrl,
+      notification_channels: ['EMAIL'],
+      metadata: {
+        subscriptionId: params.referenceId,
+      },
+    }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Xendit subscription session error ${res.status}: ${text}`)
+  }
+  const data = await res.json() as {
+    id: string
+    payment_link_url?: string
+    payment_url?: string
+    actions?: Array<{ action?: string; url?: string }>
+  }
+  const paymentLinkUrl =
+    data.payment_link_url ??
+    data.payment_url ??
+    data.actions?.find((action) => action.action === 'REDIRECT' || action.action === 'AUTH')?.url
+
+  if (!paymentLinkUrl) {
+    throw new Error('No payment link URL returned from Xendit subscription session')
+  }
+
+  return { id: data.id, paymentLinkUrl }
+}
+
+function nextSafeMonthlyAnchorDate(): string {
+  const date = new Date()
+  date.setUTCDate(Math.min(date.getUTCDate(), 28))
+  date.setUTCMinutes(date.getUTCMinutes() + 5)
+  return date.toISOString()
+}
+
 // Step 3: Create the recurring plan (called after payment_method.activated webhook)
 export async function createXenditRecurringPlan(params: {
   referenceId: string
@@ -92,6 +175,7 @@ export async function createXenditRecurringPlan(params: {
   paymentMethodId: string
   amount: number
   intervalCount: number
+  totalRecurrence?: number
   description: string
   successReturnUrl: string
   failureReturnUrl: string
@@ -109,6 +193,7 @@ export async function createXenditRecurringPlan(params: {
         reference_id: `sched_${params.referenceId}`,
         interval: 'MONTH',
         interval_count: params.intervalCount,
+        total_recurrence: params.totalRecurrence,
         anchor_date: new Date().toISOString(),
       },
       immediate_action_type: 'FULL_AMOUNT',

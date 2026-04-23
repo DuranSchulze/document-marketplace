@@ -25,36 +25,37 @@ export default function AdminOrders() {
     <div>
       <div className="mb-8">
         <p className="island-kicker mb-1">Admin</p>
-        <h1 className="text-2xl font-bold text-[var(--sea-ink)]">Orders</h1>
+        <h1 className="admin-text text-2xl font-bold">Orders</h1>
       </div>
 
-      <div className="island-shell rounded-2xl overflow-hidden">
+      <div className="admin-panel rounded-2xl overflow-hidden">
         {orders.length === 0 ? (
-          <div className="p-12 text-center text-[var(--sea-ink-soft)]">No orders yet.</div>
+          <div className="admin-empty p-12 text-center">No orders yet.</div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="border-b border-[rgba(23,58,64,0.08)] bg-[rgba(23,58,64,0.03)]">
+          <div className="admin-table-wrap">
+          <table className="admin-table w-full text-sm">
+            <thead className="admin-table-head">
               <tr>
-                <th className="px-6 py-3 text-left font-semibold text-[var(--sea-ink-soft)]">Date</th>
-                <th className="px-6 py-3 text-left font-semibold text-[var(--sea-ink-soft)]">Buyer</th>
-                <th className="px-6 py-3 text-left font-semibold text-[var(--sea-ink-soft)]">Document</th>
-                <th className="px-6 py-3 text-right font-semibold text-[var(--sea-ink-soft)]">Amount</th>
-                <th className="px-6 py-3 text-center font-semibold text-[var(--sea-ink-soft)]">Status</th>
-                <th className="px-6 py-3 text-center font-semibold text-[var(--sea-ink-soft)]">Download</th>
+                <th className="px-6 py-3 text-left font-semibold">Date</th>
+                <th className="px-6 py-3 text-left font-semibold">Buyer</th>
+                <th className="px-6 py-3 text-left font-semibold">Document</th>
+                <th className="px-6 py-3 text-right font-semibold">Amount</th>
+                <th className="px-6 py-3 text-center font-semibold">Status</th>
+                <th className="px-6 py-3 text-center font-semibold">Download</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(23,58,64,0.06)]">
+            <tbody className="admin-table-body divide-y">
               {orders.map((order) => (
-                <tr key={order.id} className="hover:bg-[rgba(23,58,64,0.02)] transition-colors">
-                  <td className="px-6 py-4 text-[var(--sea-ink-soft)] whitespace-nowrap">
+                <tr key={order.id} className="admin-table-row transition-colors">
+                  <td className="admin-muted px-6 py-4 whitespace-nowrap">
                     {new Date(order.createdAt).toLocaleDateString('en-PH')}
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-medium text-[var(--sea-ink)]">{order.buyerName}</p>
-                    <p className="text-xs text-[var(--sea-ink-soft)]">{order.buyerEmail}</p>
+                    <p className="admin-text font-medium">{order.buyerName}</p>
+                    <p className="admin-muted text-xs">{order.buyerEmail}</p>
                   </td>
-                  <td className="px-6 py-4 text-[var(--sea-ink)]">{order.documentTitle}</td>
-                  <td className="px-6 py-4 text-right font-medium text-[var(--sea-ink)]">
+                  <td className="admin-text px-6 py-4">{order.documentTitle}</td>
+                  <td className="admin-text px-6 py-4 text-right font-medium">
                     ₱{order.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -66,18 +67,19 @@ export default function AdminOrders() {
                         href={order.downloadUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-[var(--lagoon-deep)] hover:underline"
+                        className="admin-link text-xs"
                       >
                         Link
                       </a>
                     ) : (
-                      <span className="text-xs text-[var(--sea-ink-soft)]">—</span>
+                      <span className="admin-muted text-xs">—</span>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

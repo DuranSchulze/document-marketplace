@@ -41,6 +41,43 @@ function getSheetsClient() {
   return google.sheets({ version: 'v4', auth })
 }
 
+export type SheetAppendResult =
+  | { ok: true; appended: true; skipped: false; key: string; range: string }
+  | { ok: true; appended: false; skipped: true; key: string; range: string; reason: 'duplicate' | 'not_configured' }
+  | { ok: false; appended: false; skipped: false; key: string; range: string; error: string }
+
+function toSheetError(err: unknown): string {
+  return err instanceof Error ? err.message : 'Unknown Sheets error'
+}
+
+function subscriptionEventKey(record: SubscriptionRecord): string {
+  const traceId =
+    record.xenditSubscriptionId ||
+    record.xenditPaymentMethodId ||
+    record.xenditCustomerId ||
+    'no-xendit-id'
+  const dateBucket = record.recordedAt.slice(0, 10) || 'no-date'
+  return `${record.subscriptionId}:${record.event}:${traceId}:${dateBucket}`
+}
+
+async function hasExistingKey({
+  range,
+  key,
+}: {
+  range: string
+  key: string
+}): Promise<boolean> {
+  const sheets = getSheetsClient()
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: env.GOOGLE_SHEETS_ID!,
+    range,
+  })
+
+  return (res.data.values ?? [])
+    .flat()
+    .some((value) => String(value).trim() === key)
+}
+
 export function isSheetsConfigured(): boolean {
   return !!(
     env.GOOGLE_SHEETS_ID &&
@@ -104,14 +141,23 @@ export interface CustomerRecord {
   xenditInvoiceId: string
   xenditInvoiceUrl: string
   xenditExternalId: string
+  downloadUrl: string
 }
 
-const CUSTOMERS_RANGE = 'Customers!A:K'
+const CUSTOMERS_RANGE = 'Customers!A:L'
+const CUSTOMERS_KEY_RANGE = 'Customers!A:A'
 
-export async function appendCustomerRecord(record: CustomerRecord): Promise<void> {
-  if (!isSheetsConfigured()) return
+export async function appendCustomerRecord(record: CustomerRecord): Promise<SheetAppendResult> {
+  const key = record.orderId
+  if (!isSheetsConfigured()) {
+    return { ok: true, appended: false, skipped: true, key, range: CUSTOMERS_RANGE, reason: 'not_configured' }
+  }
 
   try {
+    if (await hasExistingKey({ range: CUSTOMERS_KEY_RANGE, key })) {
+      return { ok: true, appended: false, skipped: true, key, range: CUSTOMERS_RANGE, reason: 'duplicate' }
+    }
+
     const sheets = getSheetsClient()
     const row = [
       record.orderId,
@@ -125,6 +171,7 @@ export async function appendCustomerRecord(record: CustomerRecord): Promise<void
       record.xenditInvoiceId,
       record.xenditInvoiceUrl,
       record.xenditExternalId,
+      record.downloadUrl,
     ]
 
     await sheets.spreadsheets.values.append({
@@ -133,8 +180,11 @@ export async function appendCustomerRecord(record: CustomerRecord): Promise<void
       valueInputOption: 'RAW',
       requestBody: { values: [row] },
     })
+    return { ok: true, appended: true, skipped: false, key, range: CUSTOMERS_RANGE }
   } catch (err) {
-    console.error('Google Sheets error (appendCustomerRecord):', err)
+    const error = toSheetError(err)
+    console.error('Google Sheets error (appendCustomerRecord):', error)
+    return { ok: false, appended: false, skipped: false, key, range: CUSTOMERS_RANGE, error }
   }
 }
 
@@ -156,14 +206,23 @@ export interface SubscriptionRecord {
   xenditSubscriptionId: string
 }
 
-const SUBSCRIPTIONS_RANGE = 'Subscriptions!A:N'
+const SUBSCRIPTIONS_RANGE = 'Subscriptions!A:O'
+const SUBSCRIPTIONS_KEY_RANGE = 'Subscriptions!A:A'
 
-export async function appendSubscriptionRecord(record: SubscriptionRecord): Promise<void> {
-  if (!isSheetsConfigured()) return
+export async function appendSubscriptionRecord(record: SubscriptionRecord): Promise<SheetAppendResult> {
+  const key = subscriptionEventKey(record)
+  if (!isSheetsConfigured()) {
+    return { ok: true, appended: false, skipped: true, key, range: SUBSCRIPTIONS_RANGE, reason: 'not_configured' }
+  }
 
   try {
+    if (await hasExistingKey({ range: SUBSCRIPTIONS_KEY_RANGE, key })) {
+      return { ok: true, appended: false, skipped: true, key, range: SUBSCRIPTIONS_RANGE, reason: 'duplicate' }
+    }
+
     const sheets = getSheetsClient()
     const row = [
+      key,
       record.subscriptionId,
       record.planName,
       record.nomineeName,
@@ -186,7 +245,10 @@ export async function appendSubscriptionRecord(record: SubscriptionRecord): Prom
       valueInputOption: 'RAW',
       requestBody: { values: [row] },
     })
+    return { ok: true, appended: true, skipped: false, key, range: SUBSCRIPTIONS_RANGE }
   } catch (err) {
-    console.error('Google Sheets error (appendSubscriptionRecord):', err)
+    const error = toSheetError(err)
+    console.error('Google Sheets error (appendSubscriptionRecord):', error)
+    return { ok: false, appended: false, skipped: false, key, range: SUBSCRIPTIONS_RANGE, error }
   }
 }

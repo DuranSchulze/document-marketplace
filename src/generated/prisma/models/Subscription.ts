@@ -34,6 +34,8 @@ export type SubscriptionMinAggregateOutputType = {
   paymentChannel: string | null
   xenditCustomerId: string | null
   xenditPaymentMethodId: string | null
+  xenditPaymentSessionId: string | null
+  xenditPaymentTokenId: string | null
   xenditSubscriptionId: string | null
   authUrl: string | null
   status: string | null
@@ -52,6 +54,8 @@ export type SubscriptionMaxAggregateOutputType = {
   paymentChannel: string | null
   xenditCustomerId: string | null
   xenditPaymentMethodId: string | null
+  xenditPaymentSessionId: string | null
+  xenditPaymentTokenId: string | null
   xenditSubscriptionId: string | null
   authUrl: string | null
   status: string | null
@@ -70,6 +74,8 @@ export type SubscriptionCountAggregateOutputType = {
   paymentChannel: number
   xenditCustomerId: number
   xenditPaymentMethodId: number
+  xenditPaymentSessionId: number
+  xenditPaymentTokenId: number
   xenditSubscriptionId: number
   authUrl: number
   status: number
@@ -90,6 +96,8 @@ export type SubscriptionMinAggregateInputType = {
   paymentChannel?: true
   xenditCustomerId?: true
   xenditPaymentMethodId?: true
+  xenditPaymentSessionId?: true
+  xenditPaymentTokenId?: true
   xenditSubscriptionId?: true
   authUrl?: true
   status?: true
@@ -108,6 +116,8 @@ export type SubscriptionMaxAggregateInputType = {
   paymentChannel?: true
   xenditCustomerId?: true
   xenditPaymentMethodId?: true
+  xenditPaymentSessionId?: true
+  xenditPaymentTokenId?: true
   xenditSubscriptionId?: true
   authUrl?: true
   status?: true
@@ -126,6 +136,8 @@ export type SubscriptionCountAggregateInputType = {
   paymentChannel?: true
   xenditCustomerId?: true
   xenditPaymentMethodId?: true
+  xenditPaymentSessionId?: true
+  xenditPaymentTokenId?: true
   xenditSubscriptionId?: true
   authUrl?: true
   status?: true
@@ -217,6 +229,8 @@ export type SubscriptionGroupByOutputType = {
   paymentChannel: string | null
   xenditCustomerId: string | null
   xenditPaymentMethodId: string | null
+  xenditPaymentSessionId: string | null
+  xenditPaymentTokenId: string | null
   xenditSubscriptionId: string | null
   authUrl: string | null
   status: string
@@ -256,6 +270,8 @@ export type SubscriptionWhereInput = {
   paymentChannel?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditPaymentMethodId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentSessionId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentTokenId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditSubscriptionId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   authUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
   status?: Prisma.StringFilter<"Subscription"> | string
@@ -275,6 +291,8 @@ export type SubscriptionOrderByWithRelationInput = {
   paymentChannel?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditPaymentSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditPaymentTokenId?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
   authUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -298,6 +316,8 @@ export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
   nomineeAddress?: Prisma.StringNullableFilter<"Subscription"> | string | null
   paymentChannel?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentSessionId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentTokenId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   authUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
   status?: Prisma.StringFilter<"Subscription"> | string
   createdAt?: Prisma.DateTimeFilter<"Subscription"> | Date | string
@@ -316,6 +336,8 @@ export type SubscriptionOrderByWithAggregationInput = {
   paymentChannel?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditPaymentSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  xenditPaymentTokenId?: Prisma.SortOrderInput | Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
   authUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -340,6 +362,8 @@ export type SubscriptionScalarWhereWithAggregatesInput = {
   paymentChannel?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   xenditCustomerId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   xenditPaymentMethodId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  xenditPaymentSessionId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
+  xenditPaymentTokenId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   xenditSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   authUrl?: Prisma.StringNullableWithAggregatesFilter<"Subscription"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Subscription"> | string
@@ -357,6 +381,8 @@ export type SubscriptionCreateInput = {
   paymentChannel?: string | null
   xenditCustomerId?: string | null
   xenditPaymentMethodId?: string | null
+  xenditPaymentSessionId?: string | null
+  xenditPaymentTokenId?: string | null
   xenditSubscriptionId?: string | null
   authUrl?: string | null
   status?: string
@@ -376,6 +402,8 @@ export type SubscriptionUncheckedCreateInput = {
   paymentChannel?: string | null
   xenditCustomerId?: string | null
   xenditPaymentMethodId?: string | null
+  xenditPaymentSessionId?: string | null
+  xenditPaymentTokenId?: string | null
   xenditSubscriptionId?: string | null
   authUrl?: string | null
   status?: string
@@ -393,6 +421,8 @@ export type SubscriptionUpdateInput = {
   paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentTokenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -412,6 +442,8 @@ export type SubscriptionUncheckedUpdateInput = {
   paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentTokenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -430,6 +462,8 @@ export type SubscriptionCreateManyInput = {
   paymentChannel?: string | null
   xenditCustomerId?: string | null
   xenditPaymentMethodId?: string | null
+  xenditPaymentSessionId?: string | null
+  xenditPaymentTokenId?: string | null
   xenditSubscriptionId?: string | null
   authUrl?: string | null
   status?: string
@@ -447,6 +481,8 @@ export type SubscriptionUpdateManyMutationInput = {
   paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentTokenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -465,6 +501,8 @@ export type SubscriptionUncheckedUpdateManyInput = {
   paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentTokenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -493,6 +531,8 @@ export type SubscriptionCountOrderByAggregateInput = {
   paymentChannel?: Prisma.SortOrder
   xenditCustomerId?: Prisma.SortOrder
   xenditPaymentMethodId?: Prisma.SortOrder
+  xenditPaymentSessionId?: Prisma.SortOrder
+  xenditPaymentTokenId?: Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrder
   authUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -511,6 +551,8 @@ export type SubscriptionMaxOrderByAggregateInput = {
   paymentChannel?: Prisma.SortOrder
   xenditCustomerId?: Prisma.SortOrder
   xenditPaymentMethodId?: Prisma.SortOrder
+  xenditPaymentSessionId?: Prisma.SortOrder
+  xenditPaymentTokenId?: Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrder
   authUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -529,6 +571,8 @@ export type SubscriptionMinOrderByAggregateInput = {
   paymentChannel?: Prisma.SortOrder
   xenditCustomerId?: Prisma.SortOrder
   xenditPaymentMethodId?: Prisma.SortOrder
+  xenditPaymentSessionId?: Prisma.SortOrder
+  xenditPaymentTokenId?: Prisma.SortOrder
   xenditSubscriptionId?: Prisma.SortOrder
   authUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -588,6 +632,8 @@ export type SubscriptionCreateWithoutPlanInput = {
   paymentChannel?: string | null
   xenditCustomerId?: string | null
   xenditPaymentMethodId?: string | null
+  xenditPaymentSessionId?: string | null
+  xenditPaymentTokenId?: string | null
   xenditSubscriptionId?: string | null
   authUrl?: string | null
   status?: string
@@ -605,6 +651,8 @@ export type SubscriptionUncheckedCreateWithoutPlanInput = {
   paymentChannel?: string | null
   xenditCustomerId?: string | null
   xenditPaymentMethodId?: string | null
+  xenditPaymentSessionId?: string | null
+  xenditPaymentTokenId?: string | null
   xenditSubscriptionId?: string | null
   authUrl?: string | null
   status?: string
@@ -652,6 +700,8 @@ export type SubscriptionScalarWhereInput = {
   paymentChannel?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditCustomerId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditPaymentMethodId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentSessionId?: Prisma.StringNullableFilter<"Subscription"> | string | null
+  xenditPaymentTokenId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   xenditSubscriptionId?: Prisma.StringNullableFilter<"Subscription"> | string | null
   authUrl?: Prisma.StringNullableFilter<"Subscription"> | string | null
   status?: Prisma.StringFilter<"Subscription"> | string
@@ -669,6 +719,8 @@ export type SubscriptionCreateManyPlanInput = {
   paymentChannel?: string | null
   xenditCustomerId?: string | null
   xenditPaymentMethodId?: string | null
+  xenditPaymentSessionId?: string | null
+  xenditPaymentTokenId?: string | null
   xenditSubscriptionId?: string | null
   authUrl?: string | null
   status?: string
@@ -686,6 +738,8 @@ export type SubscriptionUpdateWithoutPlanInput = {
   paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentTokenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -703,6 +757,8 @@ export type SubscriptionUncheckedUpdateWithoutPlanInput = {
   paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentTokenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -720,6 +776,8 @@ export type SubscriptionUncheckedUpdateManyWithoutPlanInput = {
   paymentChannel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  xenditPaymentTokenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   xenditSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -740,6 +798,8 @@ export type SubscriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   paymentChannel?: boolean
   xenditCustomerId?: boolean
   xenditPaymentMethodId?: boolean
+  xenditPaymentSessionId?: boolean
+  xenditPaymentTokenId?: boolean
   xenditSubscriptionId?: boolean
   authUrl?: boolean
   status?: boolean
@@ -759,6 +819,8 @@ export type SubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   paymentChannel?: boolean
   xenditCustomerId?: boolean
   xenditPaymentMethodId?: boolean
+  xenditPaymentSessionId?: boolean
+  xenditPaymentTokenId?: boolean
   xenditSubscriptionId?: boolean
   authUrl?: boolean
   status?: boolean
@@ -778,6 +840,8 @@ export type SubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   paymentChannel?: boolean
   xenditCustomerId?: boolean
   xenditPaymentMethodId?: boolean
+  xenditPaymentSessionId?: boolean
+  xenditPaymentTokenId?: boolean
   xenditSubscriptionId?: boolean
   authUrl?: boolean
   status?: boolean
@@ -797,6 +861,8 @@ export type SubscriptionSelectScalar = {
   paymentChannel?: boolean
   xenditCustomerId?: boolean
   xenditPaymentMethodId?: boolean
+  xenditPaymentSessionId?: boolean
+  xenditPaymentTokenId?: boolean
   xenditSubscriptionId?: boolean
   authUrl?: boolean
   status?: boolean
@@ -805,7 +871,7 @@ export type SubscriptionSelectScalar = {
   activatedAt?: boolean
 }
 
-export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "planId" | "nomineeName" | "nomineeEmail" | "nomineePhone" | "nomineeAddress" | "paymentChannel" | "xenditCustomerId" | "xenditPaymentMethodId" | "xenditSubscriptionId" | "authUrl" | "status" | "createdAt" | "updatedAt" | "activatedAt", ExtArgs["result"]["subscription"]>
+export type SubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "planId" | "nomineeName" | "nomineeEmail" | "nomineePhone" | "nomineeAddress" | "paymentChannel" | "xenditCustomerId" | "xenditPaymentMethodId" | "xenditPaymentSessionId" | "xenditPaymentTokenId" | "xenditSubscriptionId" | "authUrl" | "status" | "createdAt" | "updatedAt" | "activatedAt", ExtArgs["result"]["subscription"]>
 export type SubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   plan?: boolean | Prisma.SubscriptionPlanDefaultArgs<ExtArgs>
 }
@@ -831,6 +897,8 @@ export type $SubscriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     paymentChannel: string | null
     xenditCustomerId: string | null
     xenditPaymentMethodId: string | null
+    xenditPaymentSessionId: string | null
+    xenditPaymentTokenId: string | null
     xenditSubscriptionId: string | null
     authUrl: string | null
     status: string
@@ -1270,6 +1338,8 @@ export interface SubscriptionFieldRefs {
   readonly paymentChannel: Prisma.FieldRef<"Subscription", 'String'>
   readonly xenditCustomerId: Prisma.FieldRef<"Subscription", 'String'>
   readonly xenditPaymentMethodId: Prisma.FieldRef<"Subscription", 'String'>
+  readonly xenditPaymentSessionId: Prisma.FieldRef<"Subscription", 'String'>
+  readonly xenditPaymentTokenId: Prisma.FieldRef<"Subscription", 'String'>
   readonly xenditSubscriptionId: Prisma.FieldRef<"Subscription", 'String'>
   readonly authUrl: Prisma.FieldRef<"Subscription", 'String'>
   readonly status: Prisma.FieldRef<"Subscription", 'String'>

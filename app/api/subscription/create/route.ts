@@ -2,19 +2,15 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/db'
 import { env } from '@/env'
-import {
-  createXenditCustomer,
-  createXenditPaymentMethod,
-} from '@/lib/xendit-recurring'
+import { createXenditSubscriptionSession } from '@/lib/xendit-recurring'
 import { appendSubscriptionRecord } from '@/lib/sheets'
 
 const BodySchema = z.object({
   planId: z.string().min(1),
-  nomineeName: z.string().min(1),
-  nomineeEmail: z.string().email(),
-  nomineePhone: z.string().min(1),
-  nomineeAddress: z.string().optional(),
-  paymentChannel: z.enum(['GCASH', 'PAYMAYA']).default('PAYMAYA'),
+  subscriberName: z.string().min(1),
+  subscriberEmail: z.string().email(),
+  subscriberPhone: z.string().min(1),
+  subscriberAddress: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -30,67 +26,91 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'Plan not found' }, { status: 404 })
   }
 
-  if (body.paymentChannel === 'GCASH') {
+  if (plan.durationMonths % plan.intervalCount !== 0) {
     return Response.json(
-      { error: 'GCash is not yet available. Please use Maya for now.' },
+      { error: 'Plan duration must be divisible by its billing interval' },
       { status: 400 },
     )
   }
 
   const subscriptionId = crypto.randomUUID()
   const baseUrl = env.SERVER_URL ?? new URL(request.url).origin
+  const totalRecurrence = plan.durationMonths / plan.intervalCount
 
-  // Step 1: Create Xendit customer
-  const customer = await createXenditCustomer({
-    referenceId: `cust_${subscriptionId}`,
-    givenNames: body.nomineeName,
-    email: body.nomineeEmail,
-    mobileNumber: body.nomineePhone,
-  })
+  let session: Awaited<ReturnType<typeof createXenditSubscriptionSession>>
+  try {
+    session = await createXenditSubscriptionSession({
+      referenceId: subscriptionId,
+      subscriberName: body.subscriberName,
+      subscriberEmail: body.subscriberEmail,
+      subscriberPhone: body.subscriberPhone,
+      amount: plan.amount,
+      intervalCount: plan.intervalCount,
+      totalRecurrence,
+      description: `${plan.name} - PHP ${plan.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })} every ${plan.intervalCount} month${plan.intervalCount > 1 ? 's' : ''} for ${plan.durationMonths} month${plan.durationMonths > 1 ? 's' : ''}`,
+      successReturnUrl: `${baseUrl}/subscribe/success?subscriptionId=${subscriptionId}`,
+      cancelReturnUrl: `${baseUrl}/subscribe/${body.planId}?cancelled=1`,
+    })
+  } catch (err) {
+    console.error('[subscription-create] Xendit subscription session failed', {
+      planId: body.planId,
+      subscriptionId,
+      error: err instanceof Error ? err.message : err,
+    })
+    return Response.json({ error: 'Unable to start subscription checkout' }, { status: 502 })
+  }
 
-  // Step 2: Create payment method — returns auth URL for user to authorize their e-wallet
-  const pm = await createXenditPaymentMethod({
-    customerId: customer.id,
-    channelCode: body.paymentChannel,
-    successReturnUrl: `${baseUrl}/nominees/success?subscriptionId=${subscriptionId}`,
-    failureReturnUrl: `${baseUrl}/nominees/failed?subscriptionId=${subscriptionId}`,
-    cancelReturnUrl: `${baseUrl}/nominees?cancelled=1`,
-  })
-
-  // Save subscription before redirect so webhook can find it by payment method ID
+  // Save before redirect so webhooks can resolve this subscription by reference/session ID.
   await prisma.subscription.create({
     data: {
       id: subscriptionId,
       planId: body.planId,
-      nomineeName: body.nomineeName,
-      nomineeEmail: body.nomineeEmail,
-      nomineePhone: body.nomineePhone,
-      nomineeAddress: body.nomineeAddress,
-      paymentChannel: body.paymentChannel,
-      xenditCustomerId: customer.id,
-      xenditPaymentMethodId: pm.id,
-      authUrl: pm.authUrl,
+      nomineeName: body.subscriberName,
+      nomineeEmail: body.subscriberEmail,
+      nomineePhone: body.subscriberPhone,
+      nomineeAddress: body.subscriberAddress,
+      paymentChannel: 'XENDIT_HOSTED_CHECKOUT',
+      xenditPaymentSessionId: session.id,
+      authUrl: session.paymentLinkUrl,
       status: 'pending',
     },
   })
 
   // Audit log: record every enrollment attempt (even those that never finish auth)
-  await appendSubscriptionRecord({
+  const sheetsResult = await appendSubscriptionRecord({
     subscriptionId,
     planName: plan.name,
-    nomineeName: body.nomineeName,
-    nomineeEmail: body.nomineeEmail,
-    nomineePhone: body.nomineePhone,
-    nomineeAddress: body.nomineeAddress ?? '',
-    paymentChannel: body.paymentChannel,
+    nomineeName: body.subscriberName,
+    nomineeEmail: body.subscriberEmail,
+    nomineePhone: body.subscriberPhone,
+    nomineeAddress: body.subscriberAddress ?? '',
+    paymentChannel: 'Xendit Hosted Checkout',
     amount: plan.amount,
     status: 'pending',
     event: 'created',
     recordedAt: new Date().toISOString(),
-    xenditCustomerId: customer.id,
-    xenditPaymentMethodId: pm.id,
+    xenditCustomerId: '',
+    xenditPaymentMethodId: '',
     xenditSubscriptionId: '',
   })
+  if (sheetsResult.ok && sheetsResult.appended) {
+    console.info('[subscription-create] Subscription record appended to Sheets', {
+      subscriptionId,
+      key: sheetsResult.key,
+    })
+  } else if (sheetsResult.ok && sheetsResult.skipped) {
+    console.info('[subscription-create] Subscription Sheets append skipped', {
+      subscriptionId,
+      key: sheetsResult.key,
+      reason: sheetsResult.reason,
+    })
+  } else {
+    console.error('[subscription-create] Subscription Sheets append failed', {
+      subscriptionId,
+      key: sheetsResult.key,
+      error: sheetsResult.error,
+    })
+  }
 
-  return Response.json({ authUrl: pm.authUrl, subscriptionId })
+  return Response.json({ paymentUrl: session.paymentLinkUrl, authUrl: session.paymentLinkUrl, subscriptionId })
 }

@@ -121,7 +121,7 @@ export function GoogleStatusBanner() {
 
   if (state.kind === "loading") {
     return (
-      <div className="mb-4 rounded-md border border-[rgba(23,58,64,0.08)] bg-white px-3 py-1.5 text-xs text-[var(--sea-ink-soft)]">
+      <div className="admin-panel admin-muted mb-4 rounded-md px-3 py-1.5 text-xs">
         Checking Google…
       </div>
     );
@@ -129,7 +129,7 @@ export function GoogleStatusBanner() {
 
   if (state.kind === "error") {
     return (
-      <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-700">
+      <div className="admin-alert-error mb-4 rounded-md px-3 py-1.5 text-xs">
         Google status error: {state.message}
       </div>
     );
@@ -141,21 +141,17 @@ export function GoogleStatusBanner() {
 
   const tone = bothOk
     ? {
-        bg: "bg-emerald-50",
-        border: "border-emerald-200",
-        text: "text-emerald-800",
+        alert: "admin-alert-success",
       }
     : noneOk
-      ? { bg: "bg-red-50", border: "border-red-200", text: "text-red-800" }
+      ? { alert: "admin-alert-error" }
       : {
-          bg: "bg-amber-50",
-          border: "border-amber-200",
-          text: "text-amber-900",
+          alert: "admin-alert-warning",
         };
 
   return (
     <div
-      className={`mb-4 rounded-md border ${tone.border} ${tone.bg} ${tone.text} px-3 py-1.5 text-xs`}
+      className={`mb-4 rounded-md ${tone.alert} px-3 py-1.5 text-xs`}
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <Pill
@@ -172,7 +168,7 @@ export function GoogleStatusBanner() {
         <div className="ml-auto flex items-center gap-3">
           {test.kind === "ok" && (
             <span
-              className="text-emerald-700"
+              className="text-[var(--admin-success)]"
               title={`Wrote "${test.value}" to ${test.cell}`}
             >
               ✓ wrote to {test.cell}
@@ -180,7 +176,7 @@ export function GoogleStatusBanner() {
           )}
           {test.kind === "error" && (
             <span
-              className="text-red-700 truncate max-w-[20rem]"
+              className="text-[var(--admin-danger)] truncate max-w-[20rem]"
               title={test.message}
             >
               ✗ {test.message}
@@ -189,7 +185,7 @@ export function GoogleStatusBanner() {
 
           {emailTest.kind === "ok" && (
             <span
-              className="text-emerald-700"
+              className="text-[var(--admin-success)]"
               title={`Sent to ${emailTest.to}`}
             >
               ✓ emailed {emailTest.to}
@@ -197,7 +193,7 @@ export function GoogleStatusBanner() {
           )}
           {emailTest.kind === "error" && (
             <span
-              className="text-red-700 truncate max-w-[20rem]"
+              className="text-[var(--admin-danger)] truncate max-w-[20rem]"
               title={emailTest.message}
             >
               ✗ {emailTest.message}

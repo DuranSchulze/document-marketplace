@@ -8,6 +8,10 @@ const PlanSchema = z.object({
   description: z.string().min(1),
   amount: z.number().positive(),
   intervalCount: z.number().int().positive().default(1),
+  durationMonths: z.number().int().positive().default(1),
+}).refine((plan) => plan.durationMonths % plan.intervalCount === 0, {
+  message: 'Duration must be divisible by the billing interval',
+  path: ['durationMonths'],
 })
 
 export async function GET(request: NextRequest) {

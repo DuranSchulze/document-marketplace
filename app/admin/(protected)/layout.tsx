@@ -20,7 +20,7 @@ export default async function ProtectedAdminLayout({
   await requireAdminPage()
 
   return (
-    <div className="flex min-h-screen bg-[var(--foam)]">
+    <div className="admin-page flex min-h-screen">
       <IdleTimeoutWatcher />
       <AdminSidebar />
       <main className="flex-1 overflow-auto p-8">
