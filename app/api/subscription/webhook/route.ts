@@ -4,6 +4,7 @@ import { prisma } from '@/db'
 import { env } from '@/env'
 import { createXenditRecurringPlan } from '@/lib/xendit-recurring'
 import { appendSubscriptionRecord } from '@/lib/sheets'
+import { resolveXenditReturnBaseUrl } from '@/lib/xendit-return-url'
 
 async function logSubscriptionEvent(subscriptionId: string, status: string, event: string) {
   const sub = await prisma.subscription.findUnique({
@@ -169,7 +170,15 @@ export async function POST(request: NextRequest) {
     })
     if (!subscription || !subscription.xenditCustomerId) return new Response('OK', { status: 200 })
 
-    const baseUrl = env.SERVER_URL ?? 'https://localhost:3000'
+    const baseUrl = resolveXenditReturnBaseUrl({ serverUrl: env.SERVER_URL })
+    if (!baseUrl) {
+      console.error('[subscription-webhook] Invalid Xendit return URL configuration', {
+        subscriptionId: subscription.id,
+        serverUrl: env.SERVER_URL,
+      })
+      await logSubscriptionEvent(subscription.id, 'failed', 'invalid_return_url_configuration')
+      return new Response('OK', { status: 200 })
+    }
 
     try {
       const plan = await createXenditRecurringPlan({

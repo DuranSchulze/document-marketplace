@@ -4,6 +4,7 @@ import { prisma } from '@/db'
 import { env } from '@/env'
 import { createXenditSubscriptionSession } from '@/lib/xendit-recurring'
 import { appendSubscriptionRecord } from '@/lib/sheets'
+import { resolveXenditReturnBaseUrl } from '@/lib/xendit-return-url'
 
 const BodySchema = z.object({
   planId: z.string().min(1),
@@ -34,7 +35,19 @@ export async function POST(request: NextRequest) {
   }
 
   const subscriptionId = crypto.randomUUID()
-  const baseUrl = env.SERVER_URL ?? new URL(request.url).origin
+  const baseUrl = resolveXenditReturnBaseUrl({ serverUrl: env.SERVER_URL, requestUrl: request.url })
+  if (!baseUrl) {
+    console.error('[subscription-create] Invalid Xendit return URL configuration', {
+      planId: body.planId,
+      subscriptionId,
+      serverUrl: env.SERVER_URL,
+      requestOrigin: new URL(request.url).origin,
+    })
+    return Response.json(
+      { error: 'Subscription checkout requires SERVER_URL to be a public HTTPS URL' },
+      { status: 500 },
+    )
+  }
   const totalRecurrence = plan.durationMonths / plan.intervalCount
 
   let session: Awaited<ReturnType<typeof createXenditSubscriptionSession>>

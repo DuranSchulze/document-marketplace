@@ -97,12 +97,15 @@ export async function createXenditSubscriptionSession(params: {
   successReturnUrl: string
   cancelReturnUrl: string
 }): Promise<{ id: string; paymentLinkUrl: string }> {
+  const subscriptionWindow = createXenditSubscriptionScheduleWindow()
+
   const res = await xenditFetch('/sessions', {
     method: 'POST',
     body: JSON.stringify({
       reference_id: params.referenceId,
       session_type: 'SUBSCRIPTION',
       mode: 'PAYMENT_LINK',
+      expires_at: subscriptionWindow.expiresAt,
       amount: params.amount,
       currency: 'PHP',
       country: 'PH',
@@ -122,7 +125,7 @@ export async function createXenditSubscriptionSession(params: {
           interval: 'MONTH',
           interval_count: params.intervalCount,
           total_recurrence: params.totalRecurrence,
-          anchor_date: nextSafeMonthlyAnchorDate(),
+          anchor_date: subscriptionWindow.anchorDate,
           retry_interval: 'DAY',
           retry_interval_count: 1,
           total_retry: 3,
@@ -161,11 +164,21 @@ export async function createXenditSubscriptionSession(params: {
   return { id: data.id, paymentLinkUrl }
 }
 
-function nextSafeMonthlyAnchorDate(): string {
-  const date = new Date()
-  date.setUTCDate(Math.min(date.getUTCDate(), 28))
-  date.setUTCMinutes(date.getUTCMinutes() + 5)
-  return date.toISOString()
+export function createXenditSubscriptionScheduleWindow(now = new Date()): {
+  expiresAt: string
+  anchorDate: string
+} {
+  const expiresAt = new Date(now.getTime() + 15 * 60 * 1000)
+  const anchorDate = new Date(now.getTime() + 16 * 60 * 1000)
+
+  if (anchorDate.getUTCDate() > 28) {
+    anchorDate.setUTCMonth(anchorDate.getUTCMonth() + 1, 28)
+  }
+
+  return {
+    expiresAt: expiresAt.toISOString(),
+    anchorDate: anchorDate.toISOString(),
+  }
 }
 
 // Step 3: Create the recurring plan (called after payment_method.activated webhook)
